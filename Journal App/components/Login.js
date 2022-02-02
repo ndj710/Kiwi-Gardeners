@@ -3,8 +3,10 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-nativ
 import axios from 'axios';
 import * as Crypto from 'expo-crypto';
 import { isAlphaNumeric } from '../numeric.js';
+import { text } from './inputs';
 
-const ip = 'localhost:8003/'
+
+var ip = text()
 
 export default class Login extends React.Component {
 	

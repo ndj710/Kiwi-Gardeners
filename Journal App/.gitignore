@@ -1,4 +1,5 @@
 node_modules/
+components/inputs.js
 .expo/
 dist/
 npm-debug.*
