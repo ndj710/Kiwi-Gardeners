@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "dallas_app",
-    "slug": "dallas_app",
+    "name": "journal_app",
+    "slug": "journal_app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +24,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.spazims.dallas_app"
+      "package": "com.spazims.journal_app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
