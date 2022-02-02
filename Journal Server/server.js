@@ -22,12 +22,13 @@ http
     console.log("serever is runing at port 8003");
   });
 
+var array = fs.readFileSync('inputs.txt').toString().split("\n");
 
 var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'password',
-  database : 'journal_db'
+  host     : array[0].replace("\r", ''),
+  user     : array[1].replace("\r", ''),
+  password : array[2].replace("\r", ''),
+  database : array[3].replace("\r", '')
 })
 
 setInterval(function () {
@@ -36,10 +37,19 @@ setInterval(function () {
 }, 5000);
 
 
+// Hashing original pw
+const password = array[4].replace("\r", '');
+const key = array[5].replace("\r", '');
+var hash = crypto.createHmac('sha512', key)
+hash.update(password)
+var value = hash.digest('hex')
+var q = 'UPDATE users SET user_password="' + value + '" WHERE username="dtimp"';
+connection.query(q, function(error, results, fields) {
+	if (error) throw error;
+});
 
 
 checkpw = async (password) => {
-	key = '';
 	var hash = crypto.createHmac('sha512', key)
 	hash.update(password)
 	var value = hash.digest('hex')
