@@ -99,7 +99,7 @@ export default class NewCustomer extends React.Component {
 const styles = (state) => StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 100,
+		padding: 50,
 		backgroundColor: '#EBECF4',
 		textAlign: "center",
     	justifyContent: "center"

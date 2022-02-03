@@ -45,6 +45,8 @@ export default class Data extends React.Component {
 							searchdata.push(element)		
 						} else if (element.job_desc.toLowerCase().includes(searchedString)) {
 							searchdata.push(element)		
+						} else if (element.comments.toLowerCase().includes(searchedString)) {
+							searchdata.push(element)		
 						}
 						this.setState({displayCur: searchdata})
 					})
@@ -62,6 +64,8 @@ export default class Data extends React.Component {
 						} else if (element.quote.toLowerCase().includes(searchedString)) {
 							searchdata.push(element)		
 						} else if (element.job_desc.toLowerCase().includes(searchedString)) {
+							searchdata.push(element)		
+						} else if (element.comments.toLowerCase().includes(searchedString)) {
 							searchdata.push(element)		
 						}
 						this.setState({displayAll: searchdata})
@@ -190,24 +194,32 @@ export default class Data extends React.Component {
 		       			onPress={
 						() => this.props.navigation.navigate('Edit job', { server: this.state.ip, items: job, password: this.state.pass })
 						}>
-                    	<View style={{ flexDirection: "row", flex: 1, justifyContent: 'space-evenly' }}>
-                        	<View style={{ flexDirection: "column", flex: 0.5 }}>
+                    	<View style={{ flexDirection: "column", flex: 1, justifyContent: 'space-evenly' }}>
+                    		<View style={{ flexDirection: "row", flex: 1 }}>
+                        	    <Text style={styles(this.state).job_header_desc}>Job description: {job.job_desc}</Text>
+                        	    <Text style={styles(this.state).job_header_status}>Status: {job.job_status}</Text>
+                        	 </View>
+                        	<View style={{flexDirection: "row", flex: 1, justifyContent: 'space-evenly'  }}>
 
-								<Text style={styles(this.state).name}>{job.full_name}</Text>
+	                        	<View style={styles(this.state).sections}>
+									<Text style={styles(this.state).header}> Customer Details </Text>
+									<Text style={styles(this.state).name}>{job.full_name}</Text>
+	
+									<Text style={styles(this.state).name}>{job.ph_num}</Text>
+			
+				 					<Text style={styles(this.state).name}>{job.cust_address}</Text>
+	                        	</View>
+	                        	<View style={styles(this.state).sections}>
+									<Text style={styles(this.state).header}> Job Details </Text>
+									<Text style={styles(this.state).name}>{time.hours} hrs {time.minutes} mins</Text>
+									<Text style={styles(this.state).name}>${job.quote}</Text>	
+				 					<Text style={styles(this.state).name}>{job.job_address}</Text>
+	                            </View>                        	
+	                        	<View style={styles(this.state).sections}>
+									<Text style={styles(this.state).header}> Comments </Text>
+                        	    	<Text style={styles(this.state).name}>{job.comments}</Text>
+							</View>
 
-								<Text style={styles(this.state).name}>{job.ph_num}</Text>
-		
-			 					<Text style={styles(this.state).name}>{job.job_address}</Text>
-                        	</View>
-                        	<View style={{ flexDirection: "column", flex: 0.5 }}>
-
-
-								<Text style={styles(this.state).name}>{time.hours} hrs {time.minutes} mins</Text>
-								<Text style={styles(this.state).name}>${job.quote}</Text>	
-                            </View>                        	
-                        	<View style={{ flexDirection: "column", flex: 0.5 }}>
-
-	                            <Text style={styles(this.state).name}>{job.job_desc}</Text>
                             </View>
                 		</View>
                    	</TouchableOpacity>
@@ -225,25 +237,32 @@ export default class Data extends React.Component {
 		       			onPress={
 						() => this.props.navigation.navigate('Edit job', { server: this.state.ip, items: alljob, password: this.state.pass })
 						}>
-                    	<View style={{ flexDirection: "row", flex: 1, justifyContent: 'space-evenly' }}>
-                        	<View style={{ flexDirection: "column", flex: 0.5 }}>
+                    	<View style={{ flexDirection: "column", flex: 1, justifyContent: 'space-evenly' }}>
+                    		<View style={{ flexDirection: "row", flex: 1 }}>
+                        	    <Text style={styles(this.state).job_header_desc}>Job description: {alljob.job_desc}</Text>
+                        	    <Text style={styles(this.state).job_header_status}>Status: {alljob.job_status}</Text>
+                        	 </View>
+                        	<View style={{flexDirection: "row", flex: 1, justifyContent: 'space-evenly'  }}>
 
-								<Text style={styles(this.state).name}>{alljob.full_name}</Text>
+	                        	<View style={styles(this.state).sections}>
+									<Text style={styles(this.state).header}> Customer Details </Text>
+									<Text style={styles(this.state).name}>{alljob.full_name}</Text>
+	
+									<Text style={styles(this.state).name}>{alljob.ph_num}</Text>
+			
+				 					<Text style={styles(this.state).name}>{alljob.cust_address}</Text>
+	                        	</View>
+	                        	<View style={styles(this.state).sections}>
+									<Text style={styles(this.state).header}> Job Details </Text>
+									<Text style={styles(this.state).name}>{time.hours} hrs {time.minutes} mins</Text>
+									<Text style={styles(this.state).name}>${alljob.quote}</Text>	
+				 					<Text style={styles(this.state).name}>{alljob.job_address}</Text>
+	                            </View>                        	
+	                        	<View style={styles(this.state).sections}>
+									<Text style={styles(this.state).header}> Comments </Text>
+                        	    	<Text style={styles(this.state).name}>{alljob.comments}</Text>
+							</View>
 
-								<Text style={styles(this.state).name}>{alljob.ph_num}</Text>
-								
-			 					<Text style={styles(this.state).name}>{alljob.job_address}</Text>
-		
-                        	</View>
-                        	<View style={{ flexDirection: "column", flex: 0.5 }}>
-
-
-								<Text style={styles(this.state).name}>{time.hours} hrs {time.minutes} mins</Text>
-								<Text style={styles(this.state).name}>${alljob.quote}</Text>	
-                            </View>                        	
-                        	<View style={{ flexDirection: "column", flex: 0.5 }}>
-
-	                            <Text style={styles(this.state).name}>{alljob.job_desc}</Text>
                             </View>
                 		</View>
                    	</TouchableOpacity>
@@ -259,12 +278,21 @@ export default class Data extends React.Component {
 		       			onPress={
 						() => this.props.navigation.navigate('Edit customer', { server: this.state.ip, items: customer, password: this.state.pass })
 						}>
-                    	<View style={{ flexDirection: "row", flex: 1, justifyContent: 'space-evenly' }}>
-
-								<Text style={styles(this.state).custName}>{customer.full_name}</Text>
-			 					<Text style={styles(this.state).custAddress}>{customer.address}</Text>
-								<Text style={styles(this.state).custPhone}>{customer.ph_num}</Text>
-
+                    	<View style={{ flexDirection: "column", flex: 1, justifyContent: 'space-evenly' }}>
+                        	<View style={{flexDirection: "row", flex: 1, justifyContent: 'space-evenly'  }}>
+                        		<View style={styles(this.state).sections}>
+									<Text style={styles(this.state).header}>Name </Text>
+									<Text style={styles(this.state).name}>{customer.full_name}</Text>
+								</View>
+								<View style={styles(this.state).sections}>
+									<Text style={styles(this.state).header}>Address </Text>
+			 						<Text style={styles(this.state).name}>{customer.address}</Text>
+			 					</View>
+			 					<View style={styles(this.state).sections}>
+									<Text style={styles(this.state).header}>Phone </Text>
+									<Text style={styles(this.state).name}>{customer.ph_num}</Text>
+								</View>
+                        	 </View>
                 		</View>
                    	</TouchableOpacity>
                 </View>
@@ -295,7 +323,29 @@ export default class Data extends React.Component {
 }
 
 const styles = (state) => StyleSheet.create({
-
+	job_header_desc: {	
+        paddingTop: 5,
+        paddingBottom: 5,
+        backgroundColor: "#FFF",
+        borderBottomWidth: 1,
+        borderBottomColor: "#EBECF4",
+        flex: 0.7
+	},
+	job_header_status: {	
+        paddingTop: 5,
+        paddingBottom: 5,
+        backgroundColor: "#FFF",
+        borderBottomWidth: 1,
+        borderBottomColor: "#EBECF4",
+        flex: 0.3
+	},
+	sections: {
+		flexDirection: "column",
+		flex: 0.5,
+        borderWidth: 1,
+        borderColor: "#EBECF4",
+        paddingBottom: 3,
+	},
 	filterBox: {
 		flexDirection: 'row',
 		flex: 1
@@ -312,7 +362,7 @@ const styles = (state) => StyleSheet.create({
         borderRadius: 5,
         padding: 8,
         flexDirection: "row",
-        marginVertical: 8
+        marginVertical: 5
     },
 	// Whole screen
 	container: {
@@ -324,7 +374,9 @@ const styles = (state) => StyleSheet.create({
 	listContainer: {
 		backgroundColor: '#e6e7f2',
 		flex: 6,
-        margin: 15
+        margin: 15,
+        marginTop: 50,
+        paddingTop: 10
 	},
 	// Data objects in list container
 	customers: {
@@ -341,15 +393,12 @@ const styles = (state) => StyleSheet.create({
 		justifyContent: 'space-evenly',
         paddingTop: 5,
         paddingBottom: 5,
+		paddingLeft: 3,
         backgroundColor: "#FFF",
         alignItems: "center",
         borderBottomWidth: 1,
         borderBottomColor: "#EBECF4",
-        shadowColor: "#454D65",
-        shadowOffset: { height: 5 },
-        shadowRadius: 15,
-        shadowOpacity: 0.2,
-        zIndex: 10
+
     },
     custName: {
 		justifyContent: 'flex-start',
@@ -373,7 +422,8 @@ const styles = (state) => StyleSheet.create({
         flex: 0.3
 	},
     name: {
-        fontSize: 15,
+		paddingLeft: 3,
+        fontSize: 12,
         fontWeight: "500",
         color: "#454D65"
     },
@@ -382,6 +432,7 @@ const styles = (state) => StyleSheet.create({
 	boxhold: {
 		backgroundColor: '#dcdff2',
 		flexDirection: 'row',
+		justifyContent: 'space-evenly',
 		flex: 0.8
 	},
 
@@ -422,6 +473,7 @@ const styles = (state) => StyleSheet.create({
 		backgroundColor: Object.values(state.buttonState)[8]
 	},
 	searchbar: {
+		justifyContent: 'space-evenly',
 		flexDirection: 'row',
 		paddingBottom: 20,
 		flex: 0.4,
@@ -429,20 +481,19 @@ const styles = (state) => StyleSheet.create({
 	},
 	searchbox: {
 		paddingLeft: 10,
-		marginLeft: 20,
-		marginRight: 60,
 		flexDirection: 'row',
-		flex: 0.4,
+		flex: 0.5,
 		borderWidth: 1,
+		marginBottom: 10,
 		backgroundColor: 'white'
 	},
 	newItem: {
 		flexDirection: 'row', 
-		flex: 0.4, 
+		flex: 0.2, 
 		justifyContent: "center",
 		alignItems: "center", 
 		borderWidth: 1,
-		marginLeft: 100,
+
 		backgroundColor: 'lightblue'
 	}
 

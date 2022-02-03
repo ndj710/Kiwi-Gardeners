@@ -65,7 +65,12 @@ export default class NewJob extends React.Component {
 		await this.setState({bcolours: newColours})
 		
 		if (this.state.bcolours.every((element) => {return(element == 'black')}) && this.state.newCust == false) {
-			let est_time = parseInt(this.state.hours)*60 + parseInt(this.state.minutes);
+			let est_time = 0
+			est_time = est_time + parseInt(this.state.hours)*60 || est_time + 0
+			est_time = est_time + + parseInt(this.state.minutes) || est_time + 0
+			if (est_time == 0){
+				est_time = null
+			}
 			this.setState({button:true})
 			let payload = [ this.state.pass, this.state.job_desc, this.state.job_address,
 												est_time, this.state.quote,
@@ -215,7 +220,7 @@ const styles = (state) => StyleSheet.create({
 	},
 	container: {
 		flex: 1,
-		padding: 100,
+		padding: 50,
 		backgroundColor: '#EBECF4',
 		textAlign: "center",
     	justifyContent: "center"

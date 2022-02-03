@@ -19,7 +19,8 @@ export default class EditData extends React.Component {
 			quote: this.props.route.params.items.quote,
 			pass: this.props.route.params.password,
 			status: this.props.route.params.items.job_status,
-			bcolours: ['black', 'black', 'black', 'black', 'black'],
+			comments: this.props.route.params.items.comments,
+			bcolours: ['black', 'black', 'black', 'black', 'black', 'black'],
 			ip: this.props.route.params.server,
 			selectedItems: [{id: 0, name: 'Ongoing'}],
 			items: [{id: 0, name: 'Ongoing'},
@@ -30,9 +31,7 @@ export default class EditData extends React.Component {
 	}
 
 	callBackend = async () => {
-		
-		let checkform = [!isAlphaNumeric(this.state.job_desc, false), !isAlphaNumeric(this.state.job_address, false), !isNumeric(this.state.hours), !isNumeric(this.state.minutes), !isMoney(this.state.quote)]
-		
+		let checkform = [!isAlphaNumeric(this.state.job_desc, false), !isAlphaNumeric(this.state.job_address, false), !isNumeric(this.state.hours), !isNumeric(this.state.minutes), !isMoney(this.state.quote), !isAlphaNumeric(this.state.comments)]
 		
 		let newColours = []
 		checkform.forEach(async (element) => {
@@ -45,11 +44,16 @@ export default class EditData extends React.Component {
 		await this.setState({bcolours: newColours})
 		
 		if (this.state.bcolours.every((element) => {return(element == 'black')})) {
-			let est_time = parseInt(this.state.hours)*60 + parseInt(this.state.minutes);
+			let est_time = 0
+			est_time = est_time + parseInt(this.state.hours)*60 || est_time + 0
+			est_time = est_time + + parseInt(this.state.minutes) || est_time + 0
+			if (est_time == 0){
+				est_time = null
+			}
 			this.setState({button:true})
 			let payload = [ this.state.pass, this.state.job_desc, this.state.full_name,
 												this.state.job_address, this.state.ph_num,
-												est_time, this.state.quote, this.state.status, this.state.id ]
+												est_time, this.state.quote, this.state.status, this.state.comments, this.state.id ]
 			let data = JSON.stringify(payload)
 			try {
 				var response = await axios.post(this.state.ip + "EditJob", data)
@@ -148,7 +152,7 @@ export default class EditData extends React.Component {
 			      	<Text style={styles(this.state).headers}>Quote (dollars)</Text>
 					<TextInput
 			        style={styles(this.state).quote_input}
-			        defaultValue={this.state.quote.toString()}
+			        defaultValue={this.state.quote}
 			        onChangeText={(e) => this.setState({ quote: e})}
 			      	/>
 			      	<Text style={styles(this.state).headers}>Status</Text>
@@ -180,7 +184,7 @@ export default class EditData extends React.Component {
 							    height: 40,
 							    margin: 12,
 							    borderWidth: 2,
-	    						borderColor: Object.values(this.state.bcolours)[5],
+	    						borderColor: Object.values(this.state.bcolours)[6],
 							    padding: 10,
 			                },
 			              }
@@ -191,7 +195,12 @@ export default class EditData extends React.Component {
 			              }
 			            }
 			        />
-			        
+			       	<Text style={styles(this.state).headers}>Comments</Text>
+					<TextInput
+			        style={styles(this.state).comments_input}
+			        defaultValue={this.props.route.params.items.comments}
+			        onChangeText={(e) => this.setState({ comments: e})}
+			      	/>
 					<View style={styles(this.state).cust}>
 				      	<Text style={styles(this.state).headers}>Customer: {this.state.full_name}</Text>
 	
@@ -234,7 +243,7 @@ const styles = (state) => StyleSheet.create({
 	},
 	container: {
 		flex: 1,
-		padding: 100,
+		padding: 50,
 		backgroundColor: '#EBECF4',
 		textAlign: "center",
     	justifyContent: "center"
@@ -295,6 +304,14 @@ const styles = (state) => StyleSheet.create({
 	    borderWidth: 2,
 	    borderColor: Object.values(state.bcolours)[4],
 	    padding: 10,		
-	}
+	},
+	comments_input: {
+		backgroundColor: 'white',
+	    height: 40,
+	    margin: 12,
+	    borderWidth: 2,
+	    borderColor: Object.values(state.bcolours)[5],
+	    padding: 10,		
+	},
 });
 

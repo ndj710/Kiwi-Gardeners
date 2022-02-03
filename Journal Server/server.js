@@ -88,12 +88,13 @@ app.post("/EditJob", async (req, res) => {
 		quote = 'null'
 	}
 	let job_status = datalist[7].replaceAll('"', '')
-	let id = datalist[8].replaceAll('"', '')
+	let comments = datalist[8].replaceAll('"', '')	
+	let id = datalist[9].replaceAll('"', '')
 	let check = await checkpw(password);
 	if (check == 'Password is correct') {
 		let q1 = 'UPDATE jobs SET job_desc="' + job_desc
 				+ '", job_address="' + address + '", est_time=' + est_time 
-				+ ', quote=' + quote + ', job_status="' + job_status + '" WHERE id=' + id; 
+				+ ', quote=' + quote + ', job_status="' + job_status + '", comments="' + comments + '" WHERE id=' + id; 
 
 		const query = util.promisify(connection.query).bind(connection);
 		var result = await query(q1);
@@ -165,7 +166,7 @@ app.post("/SearchJob", async (req, res) => {
 
 	let check = await checkpw(password);
 	if (check == 'Password is correct') {
-		let q = 'SELECT jobs.id, full_name, ph_num, job_desc, job_address, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id WHERE job_status = "Ongoing"'
+		let q = 'SELECT jobs.id, full_name, ph_num, address AS cust_address, job_desc, job_address, comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id WHERE job_status = "Ongoing"'
 		+ ' ORDER BY created_at DESC';
 		const query = util.promisify(connection.query).bind(connection);
 		var result = await query(q);
@@ -192,7 +193,7 @@ app.post("/SearchAllJobs", async (req, res) => {
 	let password = datalist[0].replaceAll('"', '')
 	let check = await checkpw(password);
 	if (check == 'Password is correct') {
-		let q = 'SELECT jobs.id, full_name, ph_num, job_desc, job_address, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id ORDER BY created_at DESC';
+		let q = 'SELECT jobs.id, full_name, ph_num, address AS cust_address, job_desc, job_address, comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id ORDER BY created_at DESC';
 		const query = util.promisify(connection.query).bind(connection);
 		var result = await query(q);
 		res.send(result);
@@ -237,7 +238,7 @@ app.post("/NewCust", async (req, res) => {
 	let check = await checkpw(password);
 	if (check == 'Password is correct') {
 		let q = 'INSERT INTO customers (full_name, address, ph_num) ' +
-				'VALUES ("' + full_name + '","' + address + '",' + ph_num + ');';
+				'VALUES ("' + full_name + '","' + address + '","' + ph_num + '");';
 		const query = util.promisify(connection.query).bind(connection);
 		var result = await query(q);
 		let getid = 'SELECT id FROM customers ORDER BY date_added DESC LIMIT 1;';

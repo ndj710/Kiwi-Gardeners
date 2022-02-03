@@ -2,6 +2,7 @@ node_modules/
 components/inputs.js
 .expo/
 dist/
+eas.json
 npm-debug.*
 *.jks
 *.p8
