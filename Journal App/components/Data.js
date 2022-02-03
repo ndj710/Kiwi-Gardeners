@@ -195,14 +195,15 @@ export default class Data extends React.Component {
 						() => this.props.navigation.navigate('Edit job', { server: this.state.ip, items: job, password: this.state.pass })
 						}>
                     	<View style={{ flexDirection: "column", flex: 1, justifyContent: 'space-evenly' }}>
-                    		<View style={{ flexDirection: "row", flex: 1 }}>
-                        	    <Text style={styles(this.state).job_header_desc}>Job description: {job.job_desc}</Text>
+                     		<View style={{ flexDirection: "row", flex: 1, justifyContent: 'space-evenly' }}>
+                        	    <Text style={styles(this.state).job_header_desc}>Job: {job.job_desc}</Text>
+
                         	    <Text style={styles(this.state).job_header_status}>Status: {job.job_status}</Text>
                         	 </View>
                         	<View style={{flexDirection: "row", flex: 1, justifyContent: 'space-evenly'  }}>
 
 	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}> Customer Details </Text>
+									<Text style={styles(this.state).header}>Customer</Text>
 									<Text style={styles(this.state).name}>{job.full_name}</Text>
 	
 									<Text style={styles(this.state).name}>{job.ph_num}</Text>
@@ -210,13 +211,13 @@ export default class Data extends React.Component {
 				 					<Text style={styles(this.state).name}>{job.cust_address}</Text>
 	                        	</View>
 	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}> Job Details </Text>
+									<Text style={styles(this.state).header}>Job Details </Text>
 									<Text style={styles(this.state).name}>{time.hours} hrs {time.minutes} mins</Text>
 									<Text style={styles(this.state).name}>${job.quote}</Text>	
 				 					<Text style={styles(this.state).name}>{job.job_address}</Text>
 	                            </View>                        	
 	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}> Comments </Text>
+									<Text style={styles(this.state).header}>Comments </Text>
                         	    	<Text style={styles(this.state).name}>{job.comments}</Text>
 							</View>
 
@@ -238,14 +239,15 @@ export default class Data extends React.Component {
 						() => this.props.navigation.navigate('Edit job', { server: this.state.ip, items: alljob, password: this.state.pass })
 						}>
                     	<View style={{ flexDirection: "column", flex: 1, justifyContent: 'space-evenly' }}>
-                    		<View style={{ flexDirection: "row", flex: 1 }}>
-                        	    <Text style={styles(this.state).job_header_desc}>Job description: {alljob.job_desc}</Text>
+                    		<View style={{ flexDirection: "row", flex: 1, justifyContent: 'space-evenly' }}>
+                        	    <Text style={styles(this.state).job_header_desc}>Job: {alljob.job_desc}</Text>
+
                         	    <Text style={styles(this.state).job_header_status}>Status: {alljob.job_status}</Text>
                         	 </View>
                         	<View style={{flexDirection: "row", flex: 1, justifyContent: 'space-evenly'  }}>
 
 	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}> Customer Details </Text>
+									<Text style={styles(this.state).header}>Customer</Text>
 									<Text style={styles(this.state).name}>{alljob.full_name}</Text>
 	
 									<Text style={styles(this.state).name}>{alljob.ph_num}</Text>
@@ -253,13 +255,13 @@ export default class Data extends React.Component {
 				 					<Text style={styles(this.state).name}>{alljob.cust_address}</Text>
 	                        	</View>
 	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}> Job Details </Text>
+									<Text style={styles(this.state).header}>Job Details</Text>
 									<Text style={styles(this.state).name}>{time.hours} hrs {time.minutes} mins</Text>
 									<Text style={styles(this.state).name}>${alljob.quote}</Text>	
 				 					<Text style={styles(this.state).name}>{alljob.job_address}</Text>
 	                            </View>                        	
 	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}> Comments </Text>
+									<Text style={styles(this.state).header}>Comments </Text>
                         	    	<Text style={styles(this.state).name}>{alljob.comments}</Text>
 							</View>
 
@@ -326,18 +328,12 @@ const styles = (state) => StyleSheet.create({
 	job_header_desc: {	
         paddingTop: 5,
         paddingBottom: 5,
-        backgroundColor: "#FFF",
-        borderBottomWidth: 1,
-        borderBottomColor: "#EBECF4",
-        flex: 0.7
+
 	},
 	job_header_status: {	
         paddingTop: 5,
         paddingBottom: 5,
-        backgroundColor: "#FFF",
-        borderBottomWidth: 1,
-        borderBottomColor: "#EBECF4",
-        flex: 0.3
+
 	},
 	sections: {
 		flexDirection: "column",
