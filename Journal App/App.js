@@ -7,7 +7,6 @@ import Data from './components/Data';
 import EditCustomer from './components/EditCustomer';
 import NewJob from './components/NewJob';
 import NewCust from './components/NewCustomer';
-import SelectCust from './components/SelectCust';
 
 
 
@@ -28,7 +27,6 @@ export default function App() {
 		   		<Stack.Screen name='Edit customer' component={EditCustomer}/>
 		   		<Stack.Screen name='New Job' component={NewJob}/>
 		   		<Stack.Screen name='New Customer' component={NewCust}/>
-		   		<Stack.Screen name='Select Customer' component={SelectCust}/>
 		      </Stack.Navigator>
 		    </NavigationContainer>
   		);	
