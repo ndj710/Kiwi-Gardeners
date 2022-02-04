@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
 import axios from 'axios';
 import * as Crypto from 'expo-crypto';
-import { isAlphaNumeric } from '../numeric.js';
+import { isAlphaNumeric, getWindowValues } from '../numeric.js';
 import { text } from './inputs';
 
 
@@ -70,13 +70,15 @@ export default class Login extends React.Component {
 			style={styles.button}
         	onPress={this.callBackend}
         	activeOpacity={0.4}>
-        	<Text>Confirm</Text>
+        	<Text style={styles.confirm}>Confirm</Text>
       	</TouchableOpacity>
       
     </View>
   );
 }
 }
+
+const {height, rem, width} = getWindowValues()
 
 const styles = StyleSheet.create({
   container: {
@@ -86,22 +88,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   txt: {
-	padding: 10
+	padding: 10 * rem,
+	fontSize: 20 * rem
   },
   input: {
 	backgroundColor: 'white',
     flex: 0.3,
-    paddingLeft: 10,
-    borderWidth: 1
+    paddingLeft: 10 * rem,
+    borderWidth: 1 * rem,
+    fontSize: 20 * rem
   },
   button: {
 	backgroundColor: 'lightblue',
-	paddingTop: 8,
-	paddingBottom: 8,
-	paddingLeft: 5,
-	paddingRight: 5,
-	margin: 15,
-    borderWidth: 1	
+	paddingTop: 8 * rem,
+	paddingBottom: 8 * rem,
+	paddingLeft: 5 * rem,
+	paddingRight: 5 * rem,
+	margin: 15 * rem,
+    borderWidth: 1 * rem	
+  },
+  confirm: {
+	fontSize: 20 * rem
   }
 });
 

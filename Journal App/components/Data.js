@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, Button, TextInput, StatusBar, View, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity } from 'react-native';
 import axios from 'axios';
-import { isAlphaNumeric, convertTime } from '../numeric.js';
+import { isAlphaNumeric, convertTime, getWindowValues } from '../numeric.js';
 
 
 
@@ -152,7 +152,7 @@ export default class Data extends React.Component {
 								style={styles(this.state).newItem}
 					        	onPress={newItem[1]}
 					        	activeOpacity={0.4}>
-					        	<Text style={styles(this.state).confirmButton}>{newItem[0]}</Text>
+					        	<Text style={styles(this.state).bottomButtons}>{newItem[0]}</Text>
 					      	</TouchableOpacity>
 			            </View>
 			            <View style={styles(this.state).boxhold}>
@@ -162,7 +162,7 @@ export default class Data extends React.Component {
 					        	onPress={() => {
 									this.setState({curjob: true, cust: false, alljob: false, buttonState: [1, 'red', 'lightblue', 0, 'black', 'grey', 0, 'black', 'grey']})}}
 					        	activeOpacity={0.4}>
-					        	<Text style={styles(this.state).confirmButton}>Current Jobs</Text>
+					        	<Text style={styles(this.state).bottomButtons}>Current Jobs</Text>
 					      	</TouchableOpacity>
 							<TouchableOpacity 
 								disabled={this.state.alljob}
@@ -170,7 +170,7 @@ export default class Data extends React.Component {
 					        	onPress={() => {
 									this.setState({curjob: false, cust: false, alljob: true, buttonState: [0, 'black', 'grey', 1, 'red', 'lightblue', 0, 'black', 'grey']})}}
 					        	activeOpacity={0.4}>
-					        	<Text style={styles(this.state).confirmButton}>All Jobs</Text>
+					        	<Text style={styles(this.state).bottomButtons}>All Jobs</Text>
 					      	</TouchableOpacity>
 							<TouchableOpacity 
 								disabled={this.state.cust}
@@ -179,7 +179,7 @@ export default class Data extends React.Component {
 									this.setState({curjob: false, cust: true, alljob: false, buttonState: [0, 'black', 'grey', 0, 'black', 'grey', 1, 'red', 'lightblue']})}}
 					        	activeOpacity={0.4}>
 					        	<Text
-					        	style={styles(this.state).confirmButton}>Customers</Text>
+					        	style={styles(this.state).bottomButtons}>Customers</Text>
 					      	</TouchableOpacity>
 			            </View>
 		            </View>
@@ -277,11 +277,12 @@ export default class Data extends React.Component {
             <View style={styles(this.state).customerItem}>
                 <View style={{ flex: 1 }}>
                     <TouchableOpacity
+                    	style={styles(this.state).custButtonEdit}
 		       			onPress={
 						() => this.props.navigation.navigate('Edit customer', { server: this.state.ip, items: customer, password: this.state.pass })
 						}>
                     	<View style={{ flexDirection: "column", flex: 1, justifyContent: 'space-evenly' }}>
-                        	<View style={{flexDirection: "row", flex: 1, justifyContent: 'space-evenly'  }}>
+                        	<View style={{flexDirection: "row", flex: 1, justifyContent: 'space-evenly' }}>
                         		<View style={styles(this.state).sections}>
 									<Text style={styles(this.state).header}>Name </Text>
 									<Text style={styles(this.state).name}>{customer.full_name}</Text>
@@ -324,45 +325,51 @@ export default class Data extends React.Component {
 
 }
 
+
+const {height, rem, width} = getWindowValues()
+
 const styles = (state) => StyleSheet.create({
 	job_header_desc: {	
-        paddingTop: 5,
-        paddingBottom: 5,
+        paddingTop: 5 * rem,
+        paddingBottom: 5 * rem,
+        fontSize: 15 * rem,
 
 	},
 	job_header_status: {	
-        paddingTop: 5,
-        paddingBottom: 5,
+        paddingTop: 5 * rem,
+        paddingBottom: 5 * rem,
+        fontSize: 15 * rem,
 
 	},
 	sections: {
 		flexDirection: "column",
 		flex: 0.5,
-        borderWidth: 1,
+        borderWidth: 1 * rem,
         borderColor: "#EBECF4",
-        paddingBottom: 3,
+        paddingBottom: 3 * rem,
 	},
 	filterBox: {
 		flexDirection: 'row',
 		flex: 1
 	},
     headerTitle: {
-        fontSize: 20,
+        fontSize: 20 * rem,
         fontWeight: "500"
     },
     jobs: {
-        marginHorizontal: 16
+        marginHorizontal: 16 * rem
     },
     jobItem: {
         backgroundColor: "#FFF",
-        borderRadius: 5,
-        padding: 8,
+        borderRadius: 5 * rem,
+        padding: 8 * rem,
         flexDirection: "row",
-        marginVertical: 5
+        marginVertical: 5 * rem
     },
 	// Whole screen
 	container: {
-		flex: 1,
+		height: height,
+		width: width,
         backgroundColor: "#EBECF4",
 
     },
@@ -370,56 +377,57 @@ const styles = (state) => StyleSheet.create({
 	listContainer: {
 		backgroundColor: '#e6e7f2',
 		flex: 6,
-        margin: 15,
-        marginTop: 50,
-        paddingTop: 10
+        margin: 15 * rem,
+        marginTop: 50 * rem,
+        paddingTop: 10 * rem
 	},
 	// Data objects in list container
 	customers: {
-        marginHorizontal: 16
+        marginHorizontal: 16 * rem
     },
     customerItem: {
         backgroundColor: "#FFF",
-        borderRadius: 5,
-        padding: 8,
+        borderRadius: 5 * rem,
+        padding: 8 * rem,
         flexDirection: "row",
-        marginVertical: 8
+        marginVertical: 8 * rem
     },
     header: {
 		justifyContent: 'space-evenly',
-        paddingTop: 5,
-        paddingBottom: 5,
-		paddingLeft: 3,
+        paddingTop: 5 * rem,
+        paddingBottom: 5 * rem,
+		paddingLeft: 3 * rem,
         backgroundColor: "#FFF",
         alignItems: "center",
-        borderBottomWidth: 1,
+        borderBottomWidth: 1 * rem,
         borderBottomColor: "#EBECF4",
+        fontSize: 15 * rem,
 
     },
     custName: {
 		justifyContent: 'flex-start',
-        fontSize: 15,
+        fontSize: 15 * rem,
         fontWeight: "500",
         color: "#454D65",
         flex: 0.3
 	},
     custAddress: {
 		justifyContent: 'center',
-        fontSize: 15,
+        fontSize: 15 * rem,
         fontWeight: "500",
         color: "#454D65",
         flex: 0.3
 	},
     custPhone: {
 		justifyContent: 'flex-end',
-        fontSize: 15,
+        fontSize: 15 * rem,
         fontWeight: "500",
         color: "#454D65",
         flex: 0.3
 	},
     name: {
-		paddingLeft: 3,
-        fontSize: 12,
+		paddingLeft: 3 * rem,
+        fontSize: 12 * rem,
         fontWeight: "500",
         color: "#454D65"
     },
@@ -434,7 +442,7 @@ const styles = (state) => StyleSheet.create({
 
 	confirmButton: {
 		textAlign: 'center',
-        fontSize: 12,
+        fontSize: 12 * rem,
 		flex: 1
 
 	},
@@ -443,8 +451,8 @@ const styles = (state) => StyleSheet.create({
 		flex: 0.3, 
 		justifyContent: "center",
 		alignItems: "center", 		
-		borderWidth: Object.values(state.buttonState)[0],
-		margin: 20, 
+		borderWidth: Object.values(state.buttonState)[0]  * rem,
+		margin: 20 * rem, 
 		borderColor: Object.values(state.buttonState)[1],
 		backgroundColor: Object.values(state.buttonState)[2]
 	},
@@ -452,9 +460,9 @@ const styles = (state) => StyleSheet.create({
 		flexDirection: 'row', 
 		flex: 0.3, 
 		justifyContent: "center",
-		alignItems: "center", 		
-		borderWidth: Object.values(state.buttonState)[3],
-		margin: 20, 
+		alignItems: "center", 	
+		borderWidth: Object.values(state.buttonState)[3] * rem,
+		margin: 20 * rem, 
 		borderColor: Object.values(state.buttonState)[4],
 		backgroundColor: Object.values(state.buttonState)[5]
 	},
@@ -463,24 +471,25 @@ const styles = (state) => StyleSheet.create({
 		flex: 0.3, 
 		justifyContent: "center",
 		alignItems: "center", 		
-		borderWidth: Object.values(state.buttonState)[6],
-		margin: 20, 
+		borderWidth: Object.values(state.buttonState)[6] * rem,
+		margin: 20 * rem, 
 		borderColor: Object.values(state.buttonState)[7],
 		backgroundColor: Object.values(state.buttonState)[8]
 	},
 	searchbar: {
 		justifyContent: 'space-evenly',
 		flexDirection: 'row',
-		paddingBottom: 20,
+		paddingBottom: 20 * rem,
 		flex: 0.4,
 
 	},
 	searchbox: {
-		paddingLeft: 10,
+		paddingLeft: 10 * rem,
 		flexDirection: 'row',
 		flex: 0.5,
-		borderWidth: 1,
-		marginBottom: 10,
+		borderWidth: 1 * rem,
+		marginBottom: 10 * rem,
+		fontSize: 20 * rem,
 		backgroundColor: 'white'
 	},
 	newItem: {
@@ -488,9 +497,12 @@ const styles = (state) => StyleSheet.create({
 		flex: 0.2, 
 		justifyContent: "center",
 		alignItems: "center", 
-		borderWidth: 1,
+		borderWidth: 1 * rem,
 
 		backgroundColor: 'lightblue'
+	},
+	bottomButtons:{
+		fontSize: 20 * rem
 	}
 
 });

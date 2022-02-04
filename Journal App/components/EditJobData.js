@@ -1,8 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, Button, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert } from 'react-native';
 import axios from 'axios';
-import { isAlphaNumeric, isNumeric, convertTime, isMoney } from '../numeric.js';
-import SearchableDropdown from 'react-native-searchable-dropdown';
+import { isAlphaNumeric, isNumeric, convertTime, isMoney, getWindowValues } from '../numeric.js';
+import SelectDropdown from 'react-native-select-dropdown'
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
+
+
+const {height, rem, width} = getWindowValues()
 
 export default class EditData extends React.Component {
 	time = convertTime(this.props.route.params.items.est_time);
@@ -22,9 +27,8 @@ export default class EditData extends React.Component {
 			comments: this.props.route.params.items.comments,
 			bcolours: ['black', 'black', 'black', 'black', 'black', 'black'],
 			ip: this.props.route.params.server,
-			selectedItems: [{id: 0, name: 'Ongoing'}],
-			items: [{id: 0, name: 'Ongoing'},
-					{id: 1, name: 'Complete'}],
+			selectedItems:  ['Ongoing'],
+			items: ['Ongoing', 'Complete'],
 			button: false
 
 		}
@@ -93,7 +97,6 @@ export default class EditData extends React.Component {
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
         { text: "Delete", onPress: this.deleteJob }
@@ -112,7 +115,6 @@ export default class EditData extends React.Component {
   	render() {
 
         	return (
-
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).buttonCont}>
 					<TouchableOpacity 
@@ -122,196 +124,218 @@ export default class EditData extends React.Component {
 			        	<Text>Delete</Text>
 			      	</TouchableOpacity>
 			      	</View>
-					<Text style={styles(this.state).headers}>Job description *</Text>
-			 		<TextInput
-			        style={styles(this.state).job_input}
-			        defaultValue={this.props.route.params.items.job_desc}
-			        onChangeText={(e) => this.setState({ job_desc: e})}
-			      	/>
-					<Text style={styles(this.state).headers}>Job Address *</Text>
-					<TextInput
-			        style={styles(this.state).address_input}
-			        defaultValue={this.props.route.params.items.job_address}
-			        onChangeText={(e) => this.setState({ job_address: e})}
-			      	/>
-			      	<Text style={styles(this.state).headers}>Estimated time</Text>
-			      	<View style={{ flexDirection: 'row'}}>
-						<TextInput
-				        style={styles(this.state).hour_input}
-				        defaultValue={this.state.hours.toString()}
-				        onChangeText={(e) => this.setState({ hours: e})}
+					<View style={styles(this.state).innerView}>
+						<Text style={styles(this.state).headers}>Job description *</Text>
+				 		<TextInput
+				        style={styles(this.state).job_input}
+				        defaultValue={this.props.route.params.items.job_desc}
+				        onChangeText={(e) => this.setState({ job_desc: e})}
 				      	/>
-				      	<Text style={styles(this.state).time}>hour(s)</Text>
+						<Text style={styles(this.state).headers}>Job Address *</Text>
 						<TextInput
-				        style={styles(this.state).minute_input}
-				        defaultValue={this.state.minutes.toString()}
-				        onChangeText={(e) => this.setState({ minutes: e})}
+				        style={styles(this.state).address_input}
+				        defaultValue={this.props.route.params.items.job_address}
+				        onChangeText={(e) => this.setState({ job_address: e})}
 				      	/>
-				      	<Text style={styles(this.state).time}>minutes</Text>
-			      	</View>
-			      	<Text style={styles(this.state).headers}>Quote (dollars)</Text>
-					<TextInput
-			        style={styles(this.state).quote_input}
-			        defaultValue={this.state.quote}
-			        onChangeText={(e) => this.setState({ quote: e})}
-			      	/>
-			      	<Text style={styles(this.state).headers}>Status</Text>
-		          	<SearchableDropdown
-			            onItemSelect={(item) => {
-			              this.setState({ status: item.name });
-			            }}
-			            containerStyle={{ padding: 5 }}
-			            itemStyle={{
-			              padding: 10,
-			              marginTop: 2,
-			              backgroundColor: '#ddd',
-			              borderColor: '#bbb',
-			              borderWidth: 1,
-			              borderRadius: 5,
-			            }}
-			            itemTextStyle={{ color: '#222' }}
-			            itemsContainerStyle={{ maxHeight: 140 }}
-			            items={this.state.items}
-			            defaultIndex={2}
-			            resetValue={false}
-			            textInputProps={
-			              {
-							defaultValue: this.state.status,
-							value: this.state.selectedItems.name,
-			                placeholder: "Status",
-			                style: {
-								backgroundColor: 'white',
-							    height: 40,
-							    margin: 12,
-							    borderWidth: 2,
-	    						borderColor: Object.values(this.state.bcolours)[6],
-							    padding: 10,
-			                },
-			              }
-			            }
-			            listProps={
-			              {
-			                nestedScrollEnabled: true,
-			              }
-			            }
-			        />
-			       	<Text style={styles(this.state).headers}>Comments</Text>
-					<TextInput
-			        style={styles(this.state).comments_input}
-			        defaultValue={this.props.route.params.items.comments}
-			        onChangeText={(e) => this.setState({ comments: e})}
-			      	/>
-					<View style={styles(this.state).cust}>
-				      	<Text style={styles(this.state).headers}>Customer: {this.state.full_name}</Text>
-	
-				      	<Text style={styles(this.state).headers}>Phone: {this.state.ph_num}</Text>
-				    </View>
-			        
-			      	<Button disabled={this.state.button}
-			        onPress={this.callBackend}
-			        style={styles(this.state).confirm, { backgroundColor: 'blue' }}
-			        title='Confirm'>
-			      	</Button>
+				      	<Text style={styles(this.state).headers}>Estimated time</Text>
+				      	<View style={{ flexDirection: 'row'}}>
+							<TextInput
+					        style={styles(this.state).hour_input}
+					        defaultValue={this.state.hours.toString()}
+					        onChangeText={(e) => this.setState({ hours: e})}
+					      	/>
+					      	<Text style={styles(this.state).time}>hour(s)</Text>
+							<TextInput
+					        style={styles(this.state).minute_input}
+					        defaultValue={this.state.minutes.toString()}
+					        onChangeText={(e) => this.setState({ minutes: e})}
+					      	/>
+					      	<Text style={styles(this.state).time}>minutes</Text>
+				      	</View>
+				      	<Text style={styles(this.state).headers}>Quote (dollars)</Text>
+						<TextInput
+				        style={styles(this.state).quote_input}
+				        defaultValue={this.state.quote}
+				        onChangeText={(e) => this.setState({ quote: e})}
+				      	/>
+				      	<Text style={styles(this.state).headers}>Status</Text>
+						<SelectDropdown
+							renderDropdownIcon={(isOpened) => {
+				              return (
+				                <FontAwesome
+				                  name={isOpened ? "chevron-up" : "chevron-down"}
+				                  color={"#444"}
+				                  size={18}
+				                />
+				              );
+				            }}
+							dropdownIconPosition={'right'}
+							buttonStyle={styles(this.state).status}
+							data={this.state.items}
+							defaultButtonText={this.state.status}
+							onSelect={(selectedItem, index) => {
+								this.setState({status: selectedItem})
+							}}
+							buttonTextAfterSelection={(selectedItem, index) => {
+								// text represented after item is selected
+								// if data array is an array of objects then return selectedItem.property to render after item is selected
+								return selectedItem
+							}}
+							rowTextForSelection={(item, index) => {
+								// text represented for each item in dropdown
+								// if data array is an array of objects then return item.property to represent item in dropdown
+								return item
+							}}
+						/>
+				       	<Text style={styles(this.state).headers}>Comments</Text>
+						<TextInput
+				        style={styles(this.state).comments_input}
+				        defaultValue={this.props.route.params.items.comments}
+				        onChangeText={(e) => this.setState({ comments: e})}
+				      	/>
+						<View style={styles(this.state).cust}>
+					      	<Text style={styles(this.state).headers}>Customer: {this.state.full_name}</Text>
+		
+					      	<Text style={styles(this.state).headers}>Phone: {this.state.ph_num}</Text>
+					    </View>
+				        
+						<View style={styles(this.state).buttonConfirmContainer}>
+							<TouchableOpacity 
+								disabled={this.state.button}
+								style={styles(this.state).buttonConfirm}
+					        	onPress={this.callBackend}
+					        	activeOpacity={0.4}>
+					        	<Text>Confirm</Text>
+					      	</TouchableOpacity>
+						</View>
+					</View>
 				</View>
 			)			
  
   	}
 }
 
+
+
 const styles = (state) => StyleSheet.create({
+	container: {
+		flex: 1,
+		backgroundColor: '#EBECF4',
+
+	},
 	buttonCont: {
 		flexDirection: 'row',
-
+		padding: 20 * rem,
     	justifyContent: "flex-end",
 
 	},
 	button: {
 		backgroundColor: 'pink',
-		padding: 20,
-		flex: 0.2,
+		padding: 10 * rem,
+
 		flexDirection: 'row',
-		borderWidth: 1
+		borderWidth: 1 * rem
+	},
+	innerView: {
+    	padding: 50 * rem,
+    	paddingTop: 10 * rem,
+    	height: height,
+    	width: width		
 	},
 	time: {
-		paddingTop: 20,
+		paddingTop: 20 * rem,
 		textAlign: "center",
     	justifyContent: "center",
-    	fontSize: 15
+    	fontSize: 15 * rem
 	},
 	cust: {
-		paddingBottom: 10
-	},
-	container: {
-		flex: 1,
-		padding: 50,
-		backgroundColor: '#EBECF4',
-		textAlign: "center",
-    	justifyContent: "center"
+		paddingBottom: 10 * rem
 	},
 	headers:{
 		textAlign: "center",
     	justifyContent: "center",
-    	fontSize: 15
-	},
-	input: {
-		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 1,
-	    padding: 10,
+    	fontSize: 20 * rem
 	},
 	confirm: {
-		paddingTop: 50
+		paddingTop: 50 * rem
 	},
 	job_input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 2,
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[0],
-	    padding: 10,		
+	    paddingLeft: 10 * rem,		
+		fontSize: 20 * rem
 	},
 	address_input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 2,
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[1],
-	    padding: 10,		
+	    paddingLeft: 10 * rem,	
+	    fontSize: 20 * rem	
 	},
 	hour_input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
+	    height: 40 * rem,
+	    margin: 12 * rem,
 	    flex: 0.5,
-	    borderWidth: 2,
+	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[2],
-	    padding: 10,		
+	    paddingLeft: 10 * rem,		
+	    fontSize: 20 * rem
 	},
 	minute_input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
+	    height: 40 * rem,
+	    margin: 12 * rem,
 	   	flex: 0.5,
-	    borderWidth: 2,
+	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[3],
-	    padding: 10,		
+	    paddingLeft: 10 * rem,		
+	    fontSize: 20 * rem
 	},
 	quote_input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 2,
+	    height: 40 * rem,
+
+	    margin: 12 * rem,
+	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[4],
-	    padding: 10,		
+	    paddingLeft: 10 * rem,	
+	    fontSize: 20 * rem	
+	},
+	status: {
+		backgroundColor: 'white',
+		width: width - (124 * rem),
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 2 * rem,
+	    borderColor: 'black',
+	    paddingLeft: 10 * rem,	
+	    fontSize: 20 * rem	
 	},
 	comments_input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 2,
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[5],
-	    padding: 10,		
+	    paddingLeft: 10 * rem,	
+	    fontSize: 20 * rem	
 	},
+	buttonConfirmContainer: {
+		flexDirection: 'row',
+		padding: 20 * rem,
+    	justifyContent: "center",
+	},
+	buttonConfirm: {
+		backgroundColor: 'lightblue',
+		padding: 10 * rem,
+		flexDirection: 'row',
+		borderWidth: 1 * rem
+  }
 });
 

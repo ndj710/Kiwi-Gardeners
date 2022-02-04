@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, Button, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
-import { isAlphaNumeric, isNumeric, convertTime } from '../numeric.js';
+import { isAlphaNumeric, isNumeric, convertTime, getWindowValues } from '../numeric.js';
+
 
 export default class EditCustomer extends React.Component {
 	_isMounted = false;
@@ -16,10 +17,11 @@ export default class EditCustomer extends React.Component {
 			pass: this.props.route.params.password,
 			ip: this.props.route.params.server,
 			bcolours: ['black', 'black', 'black'],
-			button: false
+			button: false,
 
 		}
 	}
+
 
 	callBackend = async () => {
 		let checkform = [!isAlphaNumeric(this.state.full_name, false), !isAlphaNumeric(this.state.address, false), !isNumeric(this.state.ph_num, false)]
@@ -80,7 +82,6 @@ export default class EditCustomer extends React.Component {
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
         { text: "Delete", onPress: this.deleteJob }
@@ -89,6 +90,8 @@ export default class EditCustomer extends React.Component {
 
 
   	render() {
+
+
         	return (
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).buttonCont}>
@@ -99,96 +102,112 @@ export default class EditCustomer extends React.Component {
 			        	<Text>Delete</Text>
 			      	</TouchableOpacity>
 			      	</View>
-			      	<Text style={styles(this.state).headers}>Name *</Text>
-
-					<TextInput
-			        style={styles(this.state).nameInput}
-			        defaultValue={this.state.full_name}
-			        onChangeText={(e) => this.setState({ full_name: e})}
-			      	/>
-
-					<Text style={styles(this.state).headers}>Address *</Text>
-					<TextInput
-			        style={styles(this.state).addressInput}
-			        defaultValue={this.state.address}
-			        onChangeText={(e) => this.setState({ address: e})}
-			      	/>
-			      	<Text style={styles(this.state).headers}>Phone *</Text>
-					<TextInput
-			        style={styles(this.state).phoneInput}
-			        defaultValue={this.state.ph_num}
-			        onChangeText={(e) => this.setState({ ph_num: e})}
-			      	/>  	
-			      	<Button disabled={this.state.button}
-			        onPress={this.callBackend}
-			        style={styles(this.state).confirm, { backgroundColor: 'blue' }}
-			        title='Confirm'>
-			      	</Button>
+					<View style={styles(this.state).innerView}>
+				      	<Text style={styles(this.state).headers}>Name *</Text>
+						<TextInput
+				        style={styles(this.state).nameInput}
+				        defaultValue={this.state.full_name}
+				        onChangeText={(e) => this.setState({ full_name: e})}
+				      	/>
+						<Text style={styles(this.state).headers}>Address *</Text>
+						<TextInput
+				        style={styles(this.state).addressInput}
+				        defaultValue={this.state.address}
+				        onChangeText={(e) => this.setState({ address: e})}
+				      	/>
+				      	<Text style={styles(this.state).headers}>Phone *</Text>
+						<TextInput
+				        style={styles(this.state).phoneInput}
+				        defaultValue={this.state.ph_num}
+				        onChangeText={(e) => this.setState({ ph_num: e})}
+				      	/>  	
+				      	
+						<View style={styles(this.state).buttonConfirmContainer}>
+							<TouchableOpacity 
+								disabled={this.state.button}
+								style={styles(this.state).buttonConfirm}
+					        	onPress={this.callBackend}
+					        	activeOpacity={0.4}>
+					        	<Text>Confirm</Text>
+					      	</TouchableOpacity>
+						</View>
+					</View>
 				</View>
 			)			
  
   	}
 }
 
+const {height, rem, width} = getWindowValues()
+
+
 const styles = (state) => StyleSheet.create({
+	container: {
+		flex: 1,
+		backgroundColor: '#EBECF4',
+
+	},
 	buttonCont: {
 		flexDirection: 'row',
-
+		padding: 20 * rem,
     	justifyContent: "flex-end",
 
 	},
 	button: {
 		backgroundColor: 'pink',
-		padding: 20,
-		flex: 0.2,
+		padding: 10 * rem,
 		flexDirection: 'row',
-		borderWidth: 1
+		borderWidth: 1 * rem
 	},
-	container: {
-		flex: 1,
-		padding: 50,
-		backgroundColor: '#EBECF4',
-		textAlign: "center",
-    	justifyContent: "center"
+	innerView: {
+    	padding: 50 * rem,
+    	paddingTop: 10 * rem,
+    	height: height,
+    	width: width		
 	},
 	headers:{
 		textAlign: "center",
     	justifyContent: "center",
-    	fontSize: 20
-	},
-	input: {
-		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 1,
-	    padding: 10,
-	},
-	confirm: {
-		paddingTop: 50
+    	fontSize: 20 * rem
 	},
 	nameInput: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 1,
-	    padding: 10,
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 1 * rem,
+	    paddingLeft: 10 * rem,
+	   	fontSize: 20 * rem,
 	    borderColor: Object.values(state.bcolours)[0]	
+
 	},
 	addressInput: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 1,
-	    padding: 10,	
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 1 * rem,
+	    paddingLeft: 10 * rem,
+	  	fontSize: 20 * rem,
 	    borderColor: Object.values(state.bcolours)[1]	
 	},
 	phoneInput: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 1,
-	    padding: 10,
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 1 * rem,
+	    paddingLeft: 10 * rem,
+	    fontSize: 20 * rem,
 	    borderColor: Object.values(state.bcolours)[2]	
-	}
+	},
+	buttonConfirmContainer: {
+		flexDirection: 'row',
+		padding: 20 * rem,
+    	justifyContent: "center",
+	},
+	buttonConfirm: {
+		backgroundColor: 'lightblue',
+		padding: 10 * rem,
+		flexDirection: 'row',
+		borderWidth: 1 * rem
+  }
 });
 

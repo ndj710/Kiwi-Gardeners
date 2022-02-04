@@ -1,8 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, Button, View, TextInput } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
 import axios from 'axios';
-import { isAlphaNumeric, isNumeric, convertTime } from '../numeric.js';
+import { isAlphaNumeric, isNumeric, getWindowValues } from '../numeric.js';
 import SearchableDropdown from 'react-native-searchable-dropdown';
+
+const {height, rem, width} = getWindowValues()
 
 export default class NewJob extends React.Component {
 	constructor(props) {
@@ -14,17 +16,16 @@ export default class NewJob extends React.Component {
 			minutes: '',
 			quote: '',
 			cust_id: '',
-			selectedItems: [],
+			selectedItems: {id: 0, name: 'New Customer'},
 			items: [{id: 0, name: 'New Customer'}],
 			bcolours: ['black', 'black', 'black', 'black', 'black', 'black'],
 			customerData: this.props.route.params.cust_data,
 			jobData: this.props.route.params.job_data,
 			pass: this.props.route.params.password,
-			confirmButton: 'Confirm',
+			confirmButton: 'Next',
 			ip: this.props.route.params.server,
 			newCust: false,
 			button: false
-
 		}
 	}
 
@@ -120,6 +121,7 @@ export default class NewJob extends React.Component {
 	}
 
 
+
   	render() {
         	return (
 				<View style={styles(this.state).container}>
@@ -154,6 +156,12 @@ export default class NewJob extends React.Component {
 	      	
 	      	
 	      		  	<Text style={styles(this.state).headers}>Customer *</Text>
+			        <View style={styles(this.state).customerBox}>
+			        	<Text style={styles(this.state).custName}>Currently selected: {this.state.selectedItems.name} </Text>
+			        
+
+			        </View>
+	      		  	
 		          	<SearchableDropdown
 			            onItemSelect={(item) => {
 							if (item.name == 'New Customer') {
@@ -161,33 +169,33 @@ export default class NewJob extends React.Component {
 							} else{
 								this.setState({confirmButton: 'Confirm'})
 							}
-			              this.setState({ selectedItems: item, cust_id: item.id });
+			              	this.setState({ selectedItems: item, cust_id: item.id });
 			            }}
-			            containerStyle={{ padding: 5 }}
+			            containerStyle={{ padding: 5 * rem }}
 			            itemStyle={{
-			              padding: 10,
-			              marginTop: 2,
+			              padding: 10* rem,
+			              marginTop: 2* rem,
 			              backgroundColor: '#ddd',
 			              borderColor: '#bbb',
-			              borderWidth: 1,
-			              borderRadius: 5,
+			              borderWidth: 1* rem,
+			              borderRadius: 5* rem,
 			            }}
 			            itemTextStyle={{ color: '#222' }}
-			            itemsContainerStyle={{ maxHeight: 140 }}
+			            itemsContainerStyle={{ maxHeight: 140* rem }}
 			            items={this.state.items}
-			            defaultIndex={2}
 			            resetValue={false}
 			            textInputProps={
 			              {
-							value: this.state.selectedItems.name,
 			                placeholder: "Select a customer",
+			                defaultValue: "New Customer",
 			                style: {
 								backgroundColor: 'white',
-							    height: 40,
-							    margin: 12,
-							    borderWidth: 2,
+							    height: 40 * rem,
+							    margin: 12 * rem,
+							    borderWidth: 2 * rem,
 	    						borderColor: Object.values(this.state.bcolours)[5],
-							    padding: 10,
+							    paddingLeft: 10 * rem,
+							    fontSize: 20 * rem
 			                },
 			              }
 			            }
@@ -197,92 +205,123 @@ export default class NewJob extends React.Component {
 			              }
 			            }
 			        />
-			      	<Button disabled={this.state.button}
-			        onPress={this.callBackend}
-			        style={styles(this.state).confirm, { backgroundColor: 'blue' }}
-			        title={this.state.confirmButton}>
-			      	</Button>
+			        
+
+			        
+					<View style={styles(this.state).buttonConfirmContainer}>
+						<TouchableOpacity 
+							disabled={this.state.button}
+							style={styles(this.state).buttonConfirm}
+				        	onPress={this.callBackend}
+				        	activeOpacity={0.4}>
+				        	<Text style={styles(this.state).confirmButtonText}>{this.state.confirmButton}</Text>
+				      	</TouchableOpacity>
+					</View>
 				</View>
 			)			
  
   	}
 }
 
+
+
 const styles = (state) => StyleSheet.create({
 	time: {
-		paddingTop: 20,
+		paddingTop: 20 * rem,
 		textAlign: "center",
     	justifyContent: "center",
-    	fontSize: 15
+    	fontSize: 20 * rem
 	},
 	cust: {
-		paddingBottom: 10
+		paddingBottom: 10 * rem
 	},
 	container: {
 		flex: 1,
-		padding: 50,
+		padding: 50 * rem,
 		backgroundColor: '#EBECF4',
 		textAlign: "center",
     	justifyContent: "center"
 	},
 	headers:{
 		textAlign: "center",
-    	justifyContent: "center",
-    	fontSize: 15
+
+    	fontSize: 20 * rem
+	},
+	custName:{
+		paddingTop: 20 * rem,
+		marginLeft: 18 * rem,
+    	fontSize: 20 * rem
 	},
 	input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 1,
-	    padding: 10,
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 1 * rem,
+	    padding: 10 * rem,
 	},
 	confirm: {
-		paddingTop: 50
+		paddingTop: 50 * rem
 	},
 	job_input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 2,
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[0],
-	    padding: 10,		
+	    paddingLeft: 10 * rem,		
 	},
 	address_input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 2,
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[1],
-	    padding: 10,		
+	    paddingLeft: 10 * rem,		
 	},
 	hour_input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
+	    height: 40 * rem,
+	    margin: 12 * rem,
 	    flex: 0.5,
-	    borderWidth: 2,
+	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[2],
-	    padding: 10,		
+	    paddingLeft: 10 * rem,		
 	},
 	minute_input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
+	    height: 40 * rem,
+	    margin: 12 * rem,
 	   	flex: 0.5,
-	    borderWidth: 2,
+	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[3],
-	    padding: 10,		
+	    paddingLeft: 10 * rem,		
 	},
 	quote_input: {
 		backgroundColor: 'white',
-	    height: 40,
-	    margin: 12,
-	    borderWidth: 2,
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[4],
-	    padding: 10,		
-	}
-	
+	    paddingLeft: 10 * rem,		
+	},
+	buttonConfirmContainer: {
+		flexDirection: 'row',
+		padding: 20 * rem,
+    	justifyContent: "center",
+    	paddingTop: 100 * rem
+	},
+	buttonConfirm: {
+		backgroundColor: 'lightblue',
+		padding: 10 * rem,
+		minHeight: 50 * rem,
+		minWidth: 100 * rem,
+		flexDirection: 'row',
+    	justifyContent: "center",
+		borderWidth: 1 * rem
+  },
+  confirmButtonText: {
+	fontSize: 20 * rem
+}
 	
 });
 

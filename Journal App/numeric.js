@@ -1,3 +1,12 @@
+import { Dimensions } from 'react-native';
+
+export function getWindowValues() {
+	let { width, height } = Dimensions.get('window')
+	let rem = (width / 380) / 1.5
+	return {width, height, rem}
+}
+
+
 export function isAlphaNumeric(str, empty=null) {
 	var code, i, len;
 	if (str.length == 0 && empty != null){
