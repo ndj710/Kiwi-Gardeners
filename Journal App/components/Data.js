@@ -332,13 +332,13 @@ const styles = (state) => StyleSheet.create({
 	job_header_desc: {	
         paddingTop: 5 * rem,
         paddingBottom: 5 * rem,
-        fontSize: 15 * rem,
+        fontSize: 23 * rem,
 
 	},
 	job_header_status: {	
         paddingTop: 5 * rem,
         paddingBottom: 5 * rem,
-        fontSize: 15 * rem,
+        fontSize: 23 * rem,
 
 	},
 	sections: {
@@ -368,8 +368,7 @@ const styles = (state) => StyleSheet.create({
     },
 	// Whole screen
 	container: {
-		height: height,
-		width: width,
+		flex: 1,
         backgroundColor: "#EBECF4",
 
     },
@@ -401,33 +400,33 @@ const styles = (state) => StyleSheet.create({
         alignItems: "center",
         borderBottomWidth: 1 * rem,
         borderBottomColor: "#EBECF4",
-        fontSize: 15 * rem,
+        fontSize: 20 * rem,
 
     },
     custName: {
 		justifyContent: 'flex-start',
-        fontSize: 15 * rem,
+        fontSize: 20 * rem,
         fontWeight: "500",
         color: "#454D65",
         flex: 0.3
 	},
     custAddress: {
 		justifyContent: 'center',
-        fontSize: 15 * rem,
+        fontSize: 20 * rem,
         fontWeight: "500",
         color: "#454D65",
         flex: 0.3
 	},
     custPhone: {
 		justifyContent: 'flex-end',
-        fontSize: 15 * rem,
+        fontSize: 20 * rem,
         fontWeight: "500",
         color: "#454D65",
         flex: 0.3
 	},
     name: {
 		paddingLeft: 3 * rem,
-        fontSize: 12 * rem,
+        fontSize: 17 * rem,
         fontWeight: "500",
         color: "#454D65"
     },
@@ -440,12 +439,6 @@ const styles = (state) => StyleSheet.create({
 		flex: 0.8
 	},
 
-	confirmButton: {
-		textAlign: 'center',
-        fontSize: 12 * rem,
-		flex: 1
-
-	},
 	currentJobs: {					
 		flexDirection: 'row', 
 		flex: 0.3, 

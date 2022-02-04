@@ -4,7 +4,10 @@ import axios from 'axios';
 import { isAlphaNumeric, isNumeric, getWindowValues } from '../numeric.js';
 import SearchableDropdown from 'react-native-searchable-dropdown';
 
+
 const {height, rem, width} = getWindowValues()
+
+
 
 export default class NewJob extends React.Component {
 	constructor(props) {
@@ -25,7 +28,9 @@ export default class NewJob extends React.Component {
 			confirmButton: 'Next',
 			ip: this.props.route.params.server,
 			newCust: false,
-			button: false
+			button: false,
+			selectedOption: {}
+			
 		}
 	}
 
@@ -65,13 +70,16 @@ export default class NewJob extends React.Component {
 		})
 		await this.setState({bcolours: newColours})
 		
+		var est_time = 0
+		est_time = est_time + parseInt(this.state.hours)*60 || est_time + 0
+		est_time = est_time + + parseInt(this.state.minutes) || est_time + 0
+		if (est_time == 0){
+			est_time = null
+		}
+		
+		
 		if (this.state.bcolours.every((element) => {return(element == 'black')}) && this.state.newCust == false) {
-			let est_time = 0
-			est_time = est_time + parseInt(this.state.hours)*60 || est_time + 0
-			est_time = est_time + + parseInt(this.state.minutes) || est_time + 0
-			if (est_time == 0){
-				est_time = null
-			}
+
 			this.setState({button:true})
 			let payload = [ this.state.pass, this.state.job_desc, this.state.job_address,
 												est_time, this.state.quote,
@@ -89,7 +97,7 @@ export default class NewJob extends React.Component {
 			}
 		} else if (this.state.bcolours.every((element) => {return(element == 'black')}) && this.state.newCust == true) {
 				this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: {job_desc: this.state.job_desc, job_address: this.state.job_address, 
-				est_time: parseInt(this.state.hours)*60 + parseInt(this.state.minutes), quote: this.state.quote}, cust_data: [], password: this.state.pass })
+				est_time, quote: this.state.quote}, cust_data: [], password: this.state.pass })
 		} else {
 			alert('Invalid input(s)')
 		}
@@ -119,7 +127,6 @@ export default class NewJob extends React.Component {
 		}
 
 	}
-
 
 
   	render() {
@@ -161,6 +168,7 @@ export default class NewJob extends React.Component {
 			        
 
 			        </View>
+	      		  	
 	      		  	
 		          	<SearchableDropdown
 			            onItemSelect={(item) => {
@@ -212,7 +220,7 @@ export default class NewJob extends React.Component {
 						<TouchableOpacity 
 							disabled={this.state.button}
 							style={styles(this.state).buttonConfirm}
-				        	onPress={this.callBackend}
+				        	onPress={() => {this.callBackend()}}
 				        	activeOpacity={0.4}>
 				        	<Text style={styles(this.state).confirmButtonText}>{this.state.confirmButton}</Text>
 				      	</TouchableOpacity>
