@@ -2,6 +2,10 @@ import React from 'react';
 import { StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { isAlphaNumeric, convertTime, getWindowValues } from '../numeric.js';
+import Icon from 'react-native-vector-icons/Feather';
+import FontIcon from 'react-native-vector-icons/FontAwesome';
+
+const {height, rem, width} = getWindowValues()
 
 
 
@@ -22,7 +26,13 @@ export default class Data extends React.Component {
 			searchbox: '',
 			curjob: true,
 			alljob: false,
-			cust: false
+			cust: false,
+			currentPage: 'Current Jobs',
+			curJobIcon: [<Icon name="tool" size={40 * rem} color="red"/>, 'red'],
+			allJobIcon: [<Icon name="book" size={40 * rem} color="black"/>, 'black'],
+			custIcon: [<Icon name="users" size={40 * rem} color="black"/>, 'black'],
+			newUserIcon: [<Icon name="user-plus" size={40 * rem} color="black"/>, 'black'],
+			newJobIcon: [<FontIcon name="sticky-note-o" size={40 * rem} color="black"/>, 'black']
 		}
 	}
 
@@ -120,18 +130,38 @@ export default class Data extends React.Component {
 		     		return response.data
 		  		})
 		  		.then(val => {
-					this.setState({ custData: val, displayCust: val});	
+					this.setState({ custData: val, displayCust: val});
 		  		})
 		  		.catch(error => {
 		     		console.log(error)
 		  		})
+	
 	  });
 	}
 	
+	handleBottomMenu(button) {
+		if (button == 'curJob') {
+			this.setState({currentPage: 'Current Jobs', curjob: true, cust: false, alljob: false, curJobIcon: [<Icon name="tool" size={40 * rem} color="red"/>, 'red'],
+																	 allJobIcon: [<Icon name="book" size={40 * rem} color="black"/>, 'black'],
+																	 custIcon: [<Icon name="users" size={40 * rem} color="black"/>, 'black']})			
+		} else if (button == 'allJob') {
+			this.setState({currentPage: 'All Jobs', curjob: false, cust: false, alljob: true, curJobIcon: [<Icon name="tool" size={40 * rem} color="black"/>, 'black'],
+																	 allJobIcon: [<Icon name="book" size={40 * rem} color="red"/>, 'red'],
+																	 custIcon: [<Icon name="users" size={40 * rem} color="black"/>, 'black']})			
+		} else if (button == 'cust') {
+			this.setState({currentPage: 'Customers', curjob: false, cust: true, alljob: false, curJobIcon: [<Icon name="tool" size={40 * rem} color="black"/>, 'black'],
+																	 allJobIcon: [<Icon name="book" size={40 * rem} color="black"/>, 'black'],
+																	 custIcon: [<Icon name="users" size={40 * rem} color="red"/>, 'red']})			
+		}
+
+	}
 	
 	pageLayout(style, displaydata, render, newItem) {
 		return (
 				<View style={styles(this.state).container}>
+					<View style={styles(this.state).headerContainer}>
+					<Text style={styles(this.state).headerPage}>{this.state.currentPage}</Text>
+					</View>
 		            <View style={styles(this.state).listContainer}>
 		                <FlatList
 		                    style={style}
@@ -150,36 +180,44 @@ export default class Data extends React.Component {
 		      				/>
 							<TouchableOpacity 
 								style={styles(this.state).newItem}
-					        	onPress={newItem[1]}
+					        	onPress={newItem[2]}
 					        	activeOpacity={0.4}>
-					        	<Text style={styles(this.state).bottomButtons}>{newItem[0]}</Text>
+					        	{newItem[0][0]}
+					        	<Text style={styles(this.state).newItemButtons}>{newItem[1]}</Text>
 					      	</TouchableOpacity>
 			            </View>
 			            <View style={styles(this.state).boxhold}>
 							<TouchableOpacity 
+								style={styles(this.state).bottomButton}
 								disabled={this.state.curjob}
-								style={styles(this.state).currentJobs}
 					        	onPress={() => {
-									this.setState({curjob: true, cust: false, alljob: false, buttonState: [1, 'red', 'lightblue', 0, 'black', 'grey', 0, 'black', 'grey']})}}
+												this.handleBottomMenu('curJob')
+										}}
 					        	activeOpacity={0.4}>
-					        	<Text style={styles(this.state).bottomButtons}>Current Jobs</Text>
+					        	{this.state.curJobIcon[0]}
+					        	<Text style={styles(this.state).bottomCurJobButton}>Current Jobs</Text>
 					      	</TouchableOpacity>
 							<TouchableOpacity 
+								style={styles(this.state).bottomButton}
 								disabled={this.state.alljob}
-								style={styles(this.state).allJobs}
 					        	onPress={() => {
-									this.setState({curjob: false, cust: false, alljob: true, buttonState: [0, 'black', 'grey', 1, 'red', 'lightblue', 0, 'black', 'grey']})}}
+												this.handleBottomMenu('allJob')
+										}}
 					        	activeOpacity={0.4}>
-					        	<Text style={styles(this.state).bottomButtons}>All Jobs</Text>
+					        	{this.state.allJobIcon[0]}
+					        	<Text style={styles(this.state).bottomAllJobButton}>All Jobs</Text>
 					      	</TouchableOpacity>
 							<TouchableOpacity 
+								style={styles(this.state).bottomButton}
 								disabled={this.state.cust}
-								style={styles(this.state).cust}
 					        	onPress={() => {
-									this.setState({curjob: false, cust: true, alljob: false, buttonState: [0, 'black', 'grey', 0, 'black', 'grey', 1, 'red', 'lightblue']})}}
+												this.handleBottomMenu('cust')
+										}}
 					        	activeOpacity={0.4}>
-					        	<Text
-					        	style={styles(this.state).bottomButtons}>Customers</Text>
+								<View>
+					        	{this.state.custIcon[0]}
+					        	</View>
+					        	<Text style={styles(this.state).bottomCustomersButton}>Customers</Text>
 					      	</TouchableOpacity>
 			            </View>
 		            </View>
@@ -272,6 +310,9 @@ export default class Data extends React.Component {
             </View>
         );
     };
+
+
+
     renderCustomer = customer => {
         return (
             <View style={styles(this.state).customerItem}>
@@ -302,21 +343,21 @@ export default class Data extends React.Component {
             </View>
         );
     };
-
+    
      render() {
 
 		if (this.state.curjob) {
-			let newJob = ['New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
+			let newJob = [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
 	        return (
 				this.pageLayout(styles(this.state).jobs, this.state.displayCur, this.renderJob, newJob)
 	        );
 		} else if (this.state.alljob == true) {
-			let newJob = ['New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
+			let newJob = [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
 			return (
 				this.pageLayout(styles(this.state).jobs, this.state.displayAll, this.renderAllJob, newJob)
 		    );			
     	} else if (this.state.cust) {
-			let newCust = ['New Customer', () => this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: [], cust_data: [], password: this.state.pass })]
+			let newCust = [this.state.newUserIcon,'New Customer', () => this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: [], cust_data: [], password: this.state.pass })]
 			return (
 				this.pageLayout(styles(this.state).customers, this.state.displayCust, this.renderCustomer, newCust)
 		    );
@@ -326,7 +367,7 @@ export default class Data extends React.Component {
 }
 
 
-const {height, rem, width} = getWindowValues()
+
 
 const styles = (state) => StyleSheet.create({
 	job_header_desc: {	
@@ -348,10 +389,7 @@ const styles = (state) => StyleSheet.create({
         borderColor: "#EBECF4",
         paddingBottom: 3 * rem,
 	},
-	filterBox: {
-		flexDirection: 'row',
-		flex: 1
-	},
+
     headerTitle: {
         fontSize: 20 * rem,
         fontWeight: "500"
@@ -372,13 +410,20 @@ const styles = (state) => StyleSheet.create({
         backgroundColor: "#EBECF4",
 
     },
+    headerContainer: {
+		justifyContent: "center",
+		alignItems: "center", 
+		backgroundColor: '#dcdff2',
+		flex: 0.7
+	},
+	headerPage: {
+		fontSize: 30 * rem
+	},
     // List (data) container
 	listContainer: {
-		backgroundColor: '#e6e7f2',
-		flex: 6,
-        margin: 15 * rem,
-        marginTop: 50 * rem,
-        paddingTop: 10 * rem
+		backgroundColor: '#EBECF4',
+		flex: 7,
+
 	},
 	// Data objects in list container
 	customers: {
@@ -434,68 +479,59 @@ const styles = (state) => StyleSheet.create({
 
 	boxhold: {
 		backgroundColor: '#dcdff2',
+        borderTopWidth: 2 * rem,
+        borderTopColor: "lightgrey",
 		flexDirection: 'row',
+		paddingBottom: 5 * rem,
+		paddingTop: 5 * rem,
 		justifyContent: 'space-evenly',
 		flex: 0.8
-	},
-
-	currentJobs: {					
-		flexDirection: 'row', 
-		flex: 0.3, 
-		justifyContent: "center",
-		alignItems: "center", 		
-		borderWidth: Object.values(state.buttonState)[0]  * rem,
-		margin: 20 * rem, 
-		borderColor: Object.values(state.buttonState)[1],
-		backgroundColor: Object.values(state.buttonState)[2]
-	},
-	allJobs: {					
-		flexDirection: 'row', 
-		flex: 0.3, 
-		justifyContent: "center",
-		alignItems: "center", 	
-		borderWidth: Object.values(state.buttonState)[3] * rem,
-		margin: 20 * rem, 
-		borderColor: Object.values(state.buttonState)[4],
-		backgroundColor: Object.values(state.buttonState)[5]
-	},
-	cust: {					
-		flexDirection: 'row', 
-		flex: 0.3, 
-		justifyContent: "center",
-		alignItems: "center", 		
-		borderWidth: Object.values(state.buttonState)[6] * rem,
-		margin: 20 * rem, 
-		borderColor: Object.values(state.buttonState)[7],
-		backgroundColor: Object.values(state.buttonState)[8]
 	},
 	searchbar: {
 		justifyContent: 'space-evenly',
 		flexDirection: 'row',
 		paddingBottom: 20 * rem,
-		flex: 0.4,
+		paddingTop: 20 * rem,
+		flex: 0.5,
 
 	},
 	searchbox: {
 		paddingLeft: 10 * rem,
 		flexDirection: 'row',
-		flex: 0.5,
+		flex: 0.6,
 		borderWidth: 1 * rem,
 		marginBottom: 10 * rem,
 		fontSize: 20 * rem,
 		backgroundColor: 'white'
 	},
 	newItem: {
-		flexDirection: 'row', 
-		flex: 0.2, 
+		flexDirection: 'column', 
+		flex: 0.3, 
 		justifyContent: "center",
 		alignItems: "center", 
-		borderWidth: 1 * rem,
-
-		backgroundColor: 'lightblue'
 	},
-	bottomButtons:{
-		fontSize: 20 * rem
+	bottomButton:{
+		justifyContent: "center",
+		alignItems: "center", 
+	},
+	newItemButtons: {
+				justifyContent: "center",
+		alignItems: "center", 
+	},
+	bottomCurJobButton: {
+		color: Object.values(state.curJobIcon)[1],
+		fontSize: 14 * rem,
+		paddingTop: 10 * rem
+	},
+	bottomAllJobButton: {
+		color: Object.values(state.allJobIcon)[1],
+		fontSize: 14 * rem,
+		paddingTop: 10 * rem
+	},
+	bottomCustomersButton: {
+		color: Object.values(state.custIcon)[1],
+		fontSize: 14 * rem,
+		paddingTop: 10 * rem
 	}
 
 });
