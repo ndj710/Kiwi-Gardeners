@@ -414,10 +414,11 @@ const styles = (state) => StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center", 
 		backgroundColor: '#dcdff2',
-		flex: 0.7
+		flex: 0.7,
+		paddingTop: 20 * rem
 	},
 	headerPage: {
-		fontSize: 30 * rem
+		fontSize: 30 * rem,
 	},
     // List (data) container
 	listContainer: {
