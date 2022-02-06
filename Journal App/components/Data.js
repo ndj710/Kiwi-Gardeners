@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import { isAlphaNumeric, convertTime, getWindowValues } from '../numeric.js';
 import Icon from 'react-native-vector-icons/Feather';
@@ -14,6 +14,7 @@ export default class Data extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			loading: true,
 			curjobData: [],
 			alljobData: [],
 			custData: [],
@@ -119,35 +120,37 @@ export default class Data extends React.Component {
 	  		.catch(error => {
 	     		console.log(error)
 	  		})
+			if (this.state.searchbox == '') {
+				this.setState({displayCur: this.state.curjobData, displayAll: this.state.alljobData, displayCust: this.state.custData})			
+			} else {
+				this.confirmSearch(this.state.searchbox)
+			}
 	}
 
 	componentDidMount() {
 	  	this.focusListener = this.props.navigation.addListener('focus', async () => {
+			this.setState({displayCur: [], displayAll: [], displayCust: []})	
+			this.setState({loading: true})
 			await this.getData()
-			if (this.state.searchbox != '') {
-				this.confirmSearch(this.state.searchbox)			
-			} else {
-				this.setState({displayCur: this.state.curjobData, displayAll: this.state.alljobData, displayCust: this.state.custData})
-			}
+			this.setState({loading: false})	
 
 	  });
 	}
 	
 	handleBottomMenu(button) {
 		if (button == 'curJob') {
-			this.setState({currentPage: 'Current Jobs', curjob: true, cust: false, alljob: false, curJobIcon: [<Icon name="tool" size={40 * rem} color="red"/>, 'red'],
+			this.setState({currentPage: 'Current Jobs', curJobIcon: [<Icon name="tool" size={40 * rem} color="red"/>, 'red'],
 																	 allJobIcon: [<Icon name="book" size={40 * rem} color="black"/>, 'black'],
-																	 custIcon: [<Icon name="users" size={40 * rem} color="black"/>, 'black']})			
+																	 custIcon: [<Icon name="users" size={40 * rem} color="black"/>, 'black'], curjob: true, cust: false, alljob: false})			
 		} else if (button == 'allJob') {
-			this.setState({currentPage: 'All Jobs', curjob: false, cust: false, alljob: true, curJobIcon: [<Icon name="tool" size={40 * rem} color="black"/>, 'black'],
+			this.setState({currentPage: 'All Jobs', curJobIcon: [<Icon name="tool" size={40 * rem} color="black"/>, 'black'],
 																	 allJobIcon: [<Icon name="book" size={40 * rem} color="red"/>, 'red'],
-																	 custIcon: [<Icon name="users" size={40 * rem} color="black"/>, 'black']})			
+																	 custIcon: [<Icon name="users" size={40 * rem} color="black"/>, 'black'], curjob: false, cust: false, alljob: true})			
 		} else if (button == 'cust') {
-			this.setState({currentPage: 'Customers', curjob: false, cust: true, alljob: false, curJobIcon: [<Icon name="tool" size={40 * rem} color="black"/>, 'black'],
+			this.setState({currentPage: 'Customers', curJobIcon: [<Icon name="tool" size={40 * rem} color="black"/>, 'black'],
 																	 allJobIcon: [<Icon name="book" size={40 * rem} color="black"/>, 'black'],
-																	 custIcon: [<Icon name="users" size={40 * rem} color="red"/>, 'red']})			
+																	 custIcon: [<Icon name="users" size={40 * rem} color="red"/>, 'red'], curjob: false, cust: true, alljob: false})			
 		}
-
 	}
 	
 	pageLayout(style, displaydata, render, newItem) {
@@ -157,6 +160,9 @@ export default class Data extends React.Component {
 					<Text style={styles(this.state).headerPage}>{this.state.currentPage}</Text>
 					</View>
 		            <View style={styles(this.state).listContainer}>
+
+						{this.state.loading && <ActivityIndicator color={"black"} size='large' />}
+
 		                <FlatList
 		                    style={style}
 		                    initialNumToRender={7}
@@ -339,13 +345,12 @@ export default class Data extends React.Component {
     };
     
      render() {
-
 		if (this.state.curjob) {
 			let newJob = [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
 	        return (
 				this.pageLayout(styles(this.state).jobs, this.state.displayCur, this.renderJob, newJob)
 	        );
-		} else if (this.state.alljob == true) {
+		} else if (this.state.alljob) {
 			let newJob = [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
 			return (
 				this.pageLayout(styles(this.state).jobs, this.state.displayAll, this.renderAllJob, newJob)

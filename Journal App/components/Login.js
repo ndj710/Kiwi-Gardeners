@@ -36,7 +36,7 @@ export default class Login extends React.Component {
 		}
 		if (network_error == false) {
 			if (response.data == 'Password is correct') {
-				this.props.navigation.navigate('Data', { server: ip, pass: hashed_pw });
+				this.props.navigation.navigate('Data', {server: ip, pass: hashed_pw });
 				this.textInput.clear()
 				this.setState({ password: ''})
 			} else {
