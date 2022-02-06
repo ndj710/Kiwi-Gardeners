@@ -40,102 +40,96 @@ export default class Data extends React.Component {
 		if (isAlphaNumeric(val)) {
 			this.setState({searchbox: val})
 			let searchedString = val.toLowerCase()
-	
-					let searchdata = []
-					this.state.curjobData.forEach((element) => {
-						if (element.est_time.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)
-						} else if (element.full_name.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						} else if (element.job_address.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						} else if (element.ph_num.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						} else if (element.quote.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						} else if (element.job_desc.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						} else if (element.comments.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						}
-						this.setState({displayCur: searchdata})
-					})
-	
-					searchdata = []
-					this.state.alljobData.forEach((element) => {
-						if (element.est_time.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)
-						} else if (element.full_name.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						} else if (element.job_address.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						} else if (element.ph_num.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						} else if (element.quote.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						} else if (element.job_desc.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						} else if (element.comments.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						}
-						this.setState({displayAll: searchdata})
-					})				
-
-					searchdata = []
-					this.state.custData.forEach((element) => {
-						if (element.full_name.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)
-						} else if (element.address.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						} else if (element.ph_num.toLowerCase().includes(searchedString)) {
-							searchdata.push(element)		
-						}
-						this.setState({displayCust: searchdata})
-					})	
-
-
+			
+			let searchdata = []
+			this.state.curjobData.forEach((element) => {
+				let values = Object.values(element)
+				for (var i = 0; i < values.length; i++) {
+					if (values[i].toString().toLowerCase().includes(searchedString)) {	
+						searchdata.push(element)
+						break;
+					}
+				}
+			})
+			this.setState({displayCur: searchdata})
+			
+			
+			searchdata = []
+			this.state.alljobData.forEach((element) => {
+				let values = Object.values(element)
+				for (var i = 0; i < values.length; i++) {
+					if (values[i].toString().toLowerCase().includes(searchedString)) {	
+						searchdata.push(element)
+						break;
+					}
+				}
+			})
+			this.setState({displayAll: searchdata})	
+			
+			
+			searchdata = []
+			this.state.custData.forEach((element) => {
+				let values = Object.values(element)
+				for (var i = 0; i < values.length; i++) {
+					if (values[i].toString().toLowerCase().includes(searchedString)) {	
+						searchdata.push(element)
+						break;
+					}
+				}
+			})
+			this.setState({displayCust: searchdata})		
+					
 		} else {
 			alert('Input must be letters/numbers only')
 		}
 	}
 	
 	
+	async getData() {
+		await axios
+	  		.post(this.state.ip + "SearchJob", this.state.pass)
+	  		.then(response => {
+	     		return response.data
+	  		})
+	  		.then(val => {
+				this.setState({ curjobData: val});	
+	  		})
+	  		.catch(error => {
+	     		console.log(error)
+	  		})
+		await axios
+	  		.post(this.state.ip + "SearchAllJobs", this.state.pass)
+	  		.then(response => {
+	     		return response.data
+	  		})
+	  		.then(val => {
+				this.setState({ alljobData: val});	
+	  		})
+	  		.catch(error => {
+	     		console.log(error)
+	  		})
+		await axios
+	  		.post(this.state.ip + "SearchCustomer", this.state.pass)
+	  		.then(response => {
+	     		return response.data
+	  		})
+	  		.then(val => {
+				this.setState({ custData: val});
+	  		})
+	  		.catch(error => {
+	     		console.log(error)
+	  		})
+	}
+
 	componentDidMount() {
-	  	this.focusListener = this.props.navigation.addListener('focus', () => {
-			axios
-		  		.post(this.state.ip + "SearchJob", this.state.pass)
-		  		.then(response => {
-		     		return response.data
-		  		})
-		  		.then(val => {
-					this.setState({ curjobData: val, displayCur: val });	
-		  		})
-		  		.catch(error => {
-		     		console.log(error)
-		  		})
-			axios
-		  		.post(this.state.ip + "SearchAllJobs", this.state.pass)
-		  		.then(response => {
-		     		return response.data
-		  		})
-		  		.then(val => {
-					this.setState({ alljobData: val, displayAll: val});	
-		  		})
-		  		.catch(error => {
-		     		console.log(error)
-		  		})
-			axios
-		  		.post(this.state.ip + "SearchCustomer", this.state.pass)
-		  		.then(response => {
-		     		return response.data
-		  		})
-		  		.then(val => {
-					this.setState({ custData: val, displayCust: val});
-		  		})
-		  		.catch(error => {
-		     		console.log(error)
-		  		})
-	
+	  	this.focusListener = this.props.navigation.addListener('focus', async () => {
+			await this.getData()
+			if (this.state.searchbox != '') {
+				this.confirmSearch(this.state.searchbox)			
+			} else {
+				this.setState({displayCur: this.state.curjobData, displayAll: this.state.alljobData, displayCust: this.state.custData})
+			}
+
 	  });
 	}
 	
