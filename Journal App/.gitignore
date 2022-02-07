@@ -3,7 +3,7 @@ assets/adaptive-icon.png
 assets/icon.png
 assets/splash.png
 assets/favicon.png
-components/inputs.js
+components/inputs.js 
 .expo/
 dist/
 ./eas.json
