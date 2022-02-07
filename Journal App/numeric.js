@@ -17,7 +17,8 @@ export function isAlphaNumeric(str, empty=null) {
 		if (!(code > 47 && code < 58) && 
     		!(code > 64 && code < 91) && 
     		!(code > 96 && code < 123) &&
-    		!(code == 32)) { 
+    		!(code == 32) &&
+    		!(code == 44)) { 
   				return false;
 			}
 	}

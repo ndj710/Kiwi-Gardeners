@@ -55,12 +55,12 @@ export default class EditData extends React.Component {
 				est_time = null
 			}
 			this.setState({button:true})
-			let payload = [ this.state.pass, this.state.job_desc, this.state.full_name,
-												this.state.job_address, this.state.ph_num,
-												est_time, this.state.quote, this.state.status, this.state.comments, this.state.id ]
-			let data = JSON.stringify(payload)
+			let payload = { pass: this.state.pass, job_desc: this.state.job_desc, full_name: this.state.full_name,
+												job_address: this.state.job_address, ph_num: this.state.ph_num,
+												est_time: est_time, quote: this.state.quote, status: this.state.status, 
+												comments: this.state.comments, id: this.state.id }
 			try {
-				var response = await axios.post(this.state.ip + "EditJob", data)
+				var response = await axios.post(this.state.ip + "EditJob", payload)
 				if (response.data == 'Done') {
 					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
 				} else {
@@ -76,10 +76,9 @@ export default class EditData extends React.Component {
 	};
 	
 	deleteJob = async () => {
-			let payload = [ this.state.pass, this.state.id ]
-			let data = JSON.stringify(payload)
+			let payload = { pass: this.state.pass, id: this.state.id }
 			try {
-				var response = await axios.post(this.state.ip + "DeleteJob", data)
+				var response = await axios.post(this.state.ip + "DeleteJob", payload)
 				if (response.data == 'Done') {
 					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
 				} else {

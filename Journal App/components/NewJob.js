@@ -81,12 +81,12 @@ export default class NewJob extends React.Component {
 		if (this.state.bcolours.every((element) => {return(element == 'black')}) && this.state.newCust == false) {
 
 			this.setState({button:true})
-			let payload = [ this.state.pass, this.state.job_desc, this.state.job_address,
-												est_time, this.state.quote,
-											 	this.state.cust_id]
-			let data = JSON.stringify(payload)
+			let payload = { pass: this.state.pass, job_desc: this.state.job_desc, job_address: this.state.job_address,
+												est_time: est_time, quote: this.state.quote,
+											 	cust_id: this.state.cust_id}
+	
 			try {
-				var response = await axios.post(this.state.ip + "NewJob", data)
+				var response = await axios.post(this.state.ip + "NewJob", payload)
 				if (response.data == 'Done') {
 					this.props.navigation.navigate( 'Data', { server: this.state.ip, pass: this.state.pass} );
 				}
@@ -109,11 +109,10 @@ export default class NewJob extends React.Component {
 		if (this.state.customerData.length != 0) {
 			this.state.customerData.forEach(element => this.state.items.push({id: element.id, name: element.full_name}))			
 		} else {
-			let payload = [ this.state.pass, '']
-			let data = JSON.stringify(payload)
+			let payload = { pass: this.state.pass }
 			var search = 'SearchCustomer'					
 			axios
-		  		.post(this.state.ip + search, data)
+		  		.post(this.state.ip + search, payload)
 		  		.then(response => {
 		     		return response.data
 		  		})

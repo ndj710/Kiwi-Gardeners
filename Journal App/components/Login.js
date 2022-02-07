@@ -29,7 +29,7 @@ export default class Login extends React.Component {
 		);
 		var network_error = false;
 		try {
-			var response = await axios.post(ip + "login", hashed_pw)
+			var response = await axios.post(ip + "login", {pass: hashed_pw})
 		} catch (error) {
 			network_error = true;
 			console.log(error);

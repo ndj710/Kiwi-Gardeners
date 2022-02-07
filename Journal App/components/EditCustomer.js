@@ -24,7 +24,7 @@ export default class EditCustomer extends React.Component {
 
 
 	callBackend = async () => {
-		let checkform = [!isAlphaNumeric(this.state.full_name, false), !isAlphaNumeric(this.state.address, false), !isNumeric(this.state.ph_num, false)]
+		let checkform = [!isAlphaNumeric(this.state.full_name, false), !isAlphaNumeric(this.state.address, false), !isNumeric(this.state.ph_num)]
 		let newColours = []
 		checkform.forEach(async (element) => {
 			if (element == false) {
@@ -37,13 +37,12 @@ export default class EditCustomer extends React.Component {
 		
 		if (this.state.bcolours.every((element) => {return(element == 'black')})) {
 			this.setState({button:true})
-			let payload = [ this.state.pass, this.state.full_name,
-												this.state.address, this.state.ph_num, this.state.id]
-			let data = JSON.stringify(payload)
+			let payload = { pass: this.state.pass, full_name: this.state.full_name,
+												address: this.state.address, ph_num: this.state.ph_num, id: this.state.id}
 
 			try {
 
-				var response = await axios.post(this.state.ip + "EditCust", data)
+				var response = await axios.post(this.state.ip + "EditCust", payload)
 				if (response.data == 'Done') {
 					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
 				} else {
@@ -59,10 +58,9 @@ export default class EditCustomer extends React.Component {
 	};
 
 	deleteJob = async () => {
-			let payload = [ this.state.pass, this.state.id ]
-			let data = JSON.stringify(payload)
+			let payload = { pass: this.state.pass, id: this.state.id }
 			try {
-				var response = await axios.post(this.state.ip + "DeleteCust", data)
+				var response = await axios.post(this.state.ip + "DeleteCust", payload)
 				if (response.data == 'Done') {
 					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
 				} else if (response.data == 'Cannot delete') {
@@ -115,7 +113,7 @@ export default class EditCustomer extends React.Component {
 				        defaultValue={this.state.address}
 				        onChangeText={(e) => this.setState({ address: e})}
 				      	/>
-				      	<Text style={styles(this.state).headers}>Phone *</Text>
+				      	<Text style={styles(this.state).headers}>Phone</Text>
 						<TextInput
 				        style={styles(this.state).phoneInput}
 				        defaultValue={this.state.ph_num}

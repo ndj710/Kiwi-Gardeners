@@ -21,7 +21,7 @@ export default class NewCustomer extends React.Component {
 	}
 
 	callBackend = async () => {
-		let checkform = [!isAlphaNumeric(this.state.full_name, false), !isAlphaNumeric(this.state.address, false), !isNumeric(this.state.ph_num, false)]
+		let checkform = [!isAlphaNumeric(this.state.full_name, false), !isAlphaNumeric(this.state.address, false), !isNumeric(this.state.ph_num)]
 		let newColours = []
 		checkform.forEach(async (element) => {
 			if (element == false) {
@@ -38,20 +38,19 @@ export default class NewCustomer extends React.Component {
 
 				
 	
-			let payload = [ this.state.pass, this.state.full_name, this.state.address,
-												this.state.ph_num]
-			let data = JSON.stringify(payload)
+			let payload = { pass: this.state.pass, name: this.state.full_name, address: this.state.address,
+												ph_num: this.state.ph_num}
 			try {
-				var response = await axios.post(this.state.ip + "NewCust", data)
+				var response = await axios.post(this.state.ip + "NewCust", payload)
 				if (this.state.jobData.length == 0) {
 					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
 				} else {
 					let cust_id = Object.values(response.data)[0].id
-					let payload = [ this.state.pass, this.state.jobData.job_desc, this.state.jobData.job_address,
-														this.state.jobData.est_time, this.state.jobData.quote,
-													 	cust_id]
-					let data = JSON.stringify(payload)
-					var response = await axios.post(this.state.ip + "NewJob", data)
+					let payload = { pass: this.state.pass, job_desc: this.state.jobData.job_desc, job_address: this.state.jobData.job_address,
+														est_time: this.state.jobData.est_time, quote: this.state.jobData.quote,
+													 	cust_id: cust_id}
+
+					var response = await axios.post(this.state.ip + "NewJob", payload)
 					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
 				}
 			} catch (error) {
@@ -80,7 +79,7 @@ export default class NewCustomer extends React.Component {
 				        style={styles(this.state).addressInput}
 				        onChangeText={(e) => this.setState({ address: e})}
 				      	/>
-						<Text style={styles(this.state).headers}>Phone *</Text>
+						<Text style={styles(this.state).headers}>Phone</Text>
 						<TextInput
 				        style={styles(this.state).phoneInput}
 				        onChangeText={(e) => this.setState({ ph_num: e})}

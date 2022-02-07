@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "journalapp",
-    "slug": "journalapp",
+    "name": "Kiwi Gardeners",
+    "slug": "KiwiGardeners",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
