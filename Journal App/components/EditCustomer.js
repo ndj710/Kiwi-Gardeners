@@ -34,7 +34,7 @@ export default class EditCustomer extends React.Component {
 			}
 		})
 		await this.setState({bcolours: newColours})
-		
+		 
 		if (this.state.bcolours.every((element) => {return(element == 'black')})) {
 			this.setState({button:true})
 			let payload = { pass: this.state.pass, full_name: this.state.full_name,
