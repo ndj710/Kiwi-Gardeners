@@ -2,8 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
 import axios from 'axios';
 import { isAlphaNumeric, isNumeric, getWindowValues } from '../numeric.js';
-import SearchableDropdown from 'react-native-searchable-dropdown';
-
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const {height, rem, width} = getWindowValues()
 
@@ -13,51 +12,44 @@ export default class NewJob extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			open: false,
+			value: null,
+			items: [{id: 0, label: 'New Customer', value: 'NewCustomer'}],
+			id: null,
+			
 			job_desc: '',
 			job_address: '',
 			hours: '',
 			minutes: '',
 			quote: '',
 			cust_id: '',
-			selectedItems: {id: 0, name: 'New Customer'},
-			items: [{id: 0, name: 'New Customer'}],
+
+
 			bcolours: ['black', 'black', 'black', 'black', 'black', 'black'],
 			customerData: this.props.route.params.cust_data,
 			jobData: this.props.route.params.job_data,
 			pass: this.props.route.params.password,
-			confirmButton: 'Next',
+			confirmButton: 'Confirm',
 			ip: this.props.route.params.server,
 			newCust: false,
-			button: false,
-			selectedOption: {}
-			
+			button: false
 		}
+		this.setValue = this.setValue.bind(this);
 	}
 
 	callBackend = async () => {
 		
 		let checkform = [!isAlphaNumeric(this.state.job_desc, false), !isAlphaNumeric(this.state.job_address, false), !isNumeric(this.state.hours), !isNumeric(this.state.minutes), !isNumeric(this.state.quote)]
-
-		var result = false
-		try {
-			if (!isAlphaNumeric(Object.values(this.state.selectedItems)[1], false)) {
-				result = false
-			}
-			let id = Object.values(this.state.selectedItems)[0]
-			let name = Object.values(this.state.selectedItems)[1]
-			
-			if (name == 'New Customer'){
+		
+		let result = true
+		if (this.state.value != null) {
+			result = false
+			this.setState({cust_id: this.state.id})
+			let name = this.state.value
+			if (name == 'NewCustomer'){
 				this.setState({newCust: true})
-			} else {
-				this.state.customerData.forEach(async (element) => {
-					if (!element.full_name == name && !element.id == id) {
-						result = true
-					}})				
 			}
-
-		} catch {
-			result = true			
-		}		
+		}
 		checkform.push(result)
 		
 		let newColours = []
@@ -107,7 +99,7 @@ export default class NewJob extends React.Component {
 	componentDidMount() {
 
 		if (this.state.customerData.length != 0) {
-			this.state.customerData.forEach(element => this.state.items.push({id: element.id, name: element.full_name}))			
+			this.state.customerData.forEach(element => this.state.items.push({id: element.id, label: element.full_name, value: element.full_name}))			
 		} else {
 			let payload = { pass: this.state.pass }
 			var search = 'SearchCustomer'					
@@ -118,7 +110,7 @@ export default class NewJob extends React.Component {
 		  		})
 		  		.then(val => { 
 					this.setState({ customerData: val });	
-			  		this.state.customerData.forEach(element => this.state.items.push({id: element.id, name: element.full_name}))	
+			  		this.state.customerData.forEach(element => this.state.items.push({id: element.id, label: element.full_name, value: element.full_name}))		
 		  		})
 		  		.catch(error => {
 		     		console.log(error)
@@ -127,102 +119,103 @@ export default class NewJob extends React.Component {
 
 	}
 
+  	setValue(callback) {
+    	this.setState(state => ({
+      		value: callback(state.value)
+    	}));
+  	}
+	
+ 	setItems(callback) {
+    	this.setState(state => ({
+      		items: callback(state.items)
+    	}));
+  	}
 
   	render() {
         	return (
 				<View style={styles(this.state).container}>
-					<Text style={styles(this.state).headers}>Job description *</Text>
-			 		<TextInput
-			        style={styles(this.state).job_input}
-			        onChangeText={(e) => this.setState({ job_desc: e})}
-			      	/>
-					<Text style={styles(this.state).headers}>Job Address *</Text>
-					<TextInput
-			        style={styles(this.state).address_input}
-			        onChangeText={(e) => this.setState({ job_address: e})}
-			      	/>
-			      	<Text style={styles(this.state).headers}>Estimated time</Text>
-			      	<View style={{ flexDirection: 'row'}}>
-						<TextInput
-				        style={styles(this.state).hour_input}
-				        onChangeText={(e) => this.setState({ hours: e})}
+					<View style={styles(this.state).innerContainer}>
+						<Text style={styles(this.state).headers}>Job description *</Text>
+				 		<TextInput
+				        style={styles(this.state).job_input}
+				        onChangeText={(e) => this.setState({ job_desc: e})}
 				      	/>
-				      	<Text style={styles(this.state).time}>hour(s)</Text>
+						<Text style={styles(this.state).headers}>Job Address *</Text>
 						<TextInput
-				        style={styles(this.state).minute_input}
-				        onChangeText={(e) => this.setState({ minutes: e})}
+				        style={styles(this.state).address_input}
+				        onChangeText={(e) => this.setState({ job_address: e})}
 				      	/>
-				      	<Text style={styles(this.state).time}>minutes</Text>
-			      	</View>
-			      	<Text style={styles(this.state).headers}>Quote (dollars)</Text>
-					<TextInput
-			        style={styles(this.state).quote_input}
-			        onChangeText={(e) => this.setState({ quote: e})}
-			      	/>
-	      	
-	      	
-	      		  	<Text style={styles(this.state).headers}>Customer *</Text>
-			        <View style={styles(this.state).customerBox}>
-			        	<Text style={styles(this.state).custName}>Currently selected: {this.state.selectedItems.name} </Text>
-			        
-
-			        </View>
-	      		  	
-	      		  	
-		          	<SearchableDropdown
-			            onItemSelect={(item) => {
-							if (item.name == 'New Customer') {
-								this.setState({confirmButton: 'Next'})
-							} else{
-								this.setState({confirmButton: 'Confirm'})
-							}
-			              	this.setState({ selectedItems: item, cust_id: item.id });
-			            }}
-			            containerStyle={{ padding: 5 * rem }}
-			            itemStyle={{
-			              padding: 10* rem,
-			              marginTop: 2* rem,
-			              backgroundColor: '#ddd',
-			              borderColor: '#bbb',
-			              borderWidth: 1* rem,
-			              borderRadius: 5* rem,
-			            }}
-			            itemTextStyle={{ color: '#222' }}
-			            itemsContainerStyle={{ maxHeight: 140* rem }}
-			            items={this.state.items}
-			            resetValue={false}
-			            textInputProps={
-			              {
-			                placeholder: "Select a customer",
-			                defaultValue: "New Customer",
-			                style: {
+				      	<Text style={styles(this.state).headers}>Estimated time</Text>
+				      	<View style={{ flexDirection: 'row'}}>
+							<TextInput
+					        style={styles(this.state).hour_input}
+					        onChangeText={(e) => this.setState({ hours: e})}
+					      	/>
+					      	<Text style={styles(this.state).time}>hour(s)</Text>
+							<TextInput
+					        style={styles(this.state).minute_input}
+					        onChangeText={(e) => this.setState({ minutes: e})}
+					      	/>
+					      	<Text style={styles(this.state).time}>minutes</Text>
+				      	</View>
+				      	<Text style={styles(this.state).headers}>Quote (dollars)</Text>
+						<TextInput
+				        style={styles(this.state).quote_input}
+				        onChangeText={(e) => this.setState({ quote: e})}
+				      	/>
+		      	
+		      	
+		      		  	<Text style={styles(this.state).headers}>Customer *</Text>
+	    
+					    <DropDownPicker
+					    	style={{
 								backgroundColor: 'white',
-							    height: 40 * rem,
-							    margin: 12 * rem,
+								height: 40 * rem,
 							    borderWidth: 2 * rem,
-	    						borderColor: Object.values(this.state.bcolours)[5],
-							    paddingLeft: 10 * rem,
-							    fontSize: 20 * rem
-			                },
-			              }
-			            }
-			            listProps={
-			              {
-			                nestedScrollEnabled: true,
-			              }
-			            }
-			        />
-			        
-
-			        
-					<View style={styles(this.state).buttonConfirmContainer}>
-						<TouchableOpacity 
-							disabled={this.state.button}
-							style={styles(this.state).buttonConfirm}
-				        	onPress={() => {this.callBackend()}}
-				        	activeOpacity={0.4}>
-				        	<Text style={styles(this.state).confirmButtonText}>{this.state.confirmButton}</Text>
-				      	</TouchableOpacity>
+							    borderColor: Object.values(this.state.bcolours)[5],
+							}}
+							textStyle={{
+								fontSize: 16 * rem	
+							}}
+							containerStyle={{
+								
+							}}
+					    	listMode="FLATLIST"
+					    	placeholder="Select a customer"
+					    	searchPlaceholder="Type customer name here"
+					      	searchable={true}
+					        open={this.state.open}
+					        value={this.state.value}
+					        items={this.state.items}
+					        setOpen={() => {
+										if (this.state.open) {
+											this.setState({open: false})
+										} else {
+											this.setState({open: true})
+										}
+									}}
+					        setValue={this.setValue}
+					        setItems={this.setItems}
+					        onSelectItem={(item) => {
+								this.setState({id: item.id})
+								if (item.value == 'NewCustomer') {
+									this.setState({confirmButton: 'Next'})
+								} else {
+									this.setState({confirmButton: 'Confirm'})					
+								}
+							}}
+					
+					      />
+	
+						<View style={styles(this.state).buttonConfirmContainer}>
+							<TouchableOpacity 
+								disabled={this.state.button}
+								style={styles(this.state).buttonConfirm}
+					        	onPress={() => {this.callBackend()}}
+					        	activeOpacity={0.4}>
+					        	<Text style={styles(this.state).confirmButtonText}>{this.state.confirmButton}</Text>
+					      	</TouchableOpacity>
+						</View>
 					</View>
 				</View>
 			)			
@@ -244,28 +237,25 @@ const styles = (state) => StyleSheet.create({
 	},
 	container: {
 		flex: 1,
-		padding: 50 * rem,
 		backgroundColor: '#EBECF4',
-		textAlign: "center",
-    	justifyContent: "center"
+	},
+	innerContainer: {
+    	padding: 50 * rem,
+    	paddingTop: 100 * rem,
+    	height: height,
+    	width: width
 	},
 	headers:{
 		textAlign: "center",
-
-    	fontSize: 20 * rem
+    	fontSize: 20 * rem,
+    	margin: 5 * rem
 	},
 	custName:{
 		paddingTop: 20 * rem,
 		marginLeft: 18 * rem,
     	fontSize: 20 * rem
 	},
-	input: {
-		backgroundColor: 'white',
-	    height: 40 * rem,
-	    margin: 12 * rem,
-	    borderWidth: 1 * rem,
-	    padding: 10 * rem,
-	},
+
 	confirm: {
 		paddingTop: 50 * rem
 	},
@@ -275,7 +265,8 @@ const styles = (state) => StyleSheet.create({
 	    margin: 12 * rem,
 	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[0],
-	    paddingLeft: 10 * rem,		
+	    paddingLeft: 10 * rem,	
+	    fontSize: 20 * rem	
 	},
 	address_input: {
 		backgroundColor: 'white',
@@ -283,7 +274,8 @@ const styles = (state) => StyleSheet.create({
 	    margin: 12 * rem,
 	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[1],
-	    paddingLeft: 10 * rem,		
+	    paddingLeft: 10 * rem,	
+	    fontSize: 20 * rem		
 	},
 	hour_input: {
 		backgroundColor: 'white',
@@ -293,6 +285,7 @@ const styles = (state) => StyleSheet.create({
 	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[2],
 	    paddingLeft: 10 * rem,		
+	    fontSize: 20 * rem	
 	},
 	minute_input: {
 		backgroundColor: 'white',
@@ -301,7 +294,8 @@ const styles = (state) => StyleSheet.create({
 	   	flex: 0.5,
 	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[3],
-	    paddingLeft: 10 * rem,		
+	    paddingLeft: 10 * rem,	
+	    fontSize: 20 * rem		
 	},
 	quote_input: {
 		backgroundColor: 'white',
@@ -309,7 +303,8 @@ const styles = (state) => StyleSheet.create({
 	    margin: 12 * rem,
 	    borderWidth: 2 * rem,
 	    borderColor: Object.values(state.bcolours)[4],
-	    paddingLeft: 10 * rem,		
+	    paddingLeft: 10 * rem,	
+	    fontSize: 20 * rem		
 	},
 	buttonConfirmContainer: {
 		flexDirection: 'row',
