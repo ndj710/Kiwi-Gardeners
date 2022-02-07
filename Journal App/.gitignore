@@ -1,4 +1,5 @@
 node_modules/
+assets/
 components/inputs.js
 .expo/
 dist/
