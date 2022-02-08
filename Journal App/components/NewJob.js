@@ -135,36 +135,8 @@ export default class NewJob extends React.Component {
         	return (
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).innerContainer}>
-						<Text style={styles(this.state).headers}>Job description *</Text>
-				 		<TextInput
-				        style={styles(this.state).job_input}
-				        onChangeText={(e) => this.setState({ job_desc: e})}
-				      	/>
-						<Text style={styles(this.state).headers}>Job Address *</Text>
-						<TextInput
-				        style={styles(this.state).address_input}
-				        onChangeText={(e) => this.setState({ job_address: e})}
-				      	/>
-				      	<Text style={styles(this.state).headers}>Estimated time</Text>
-				      	<View style={{ flexDirection: 'row'}}>
-							<TextInput
-					        style={styles(this.state).hour_input}
-					        onChangeText={(e) => this.setState({ hours: e})}
-					      	/>
-					      	<Text style={styles(this.state).time}>hour(s)</Text>
-							<TextInput
-					        style={styles(this.state).minute_input}
-					        onChangeText={(e) => this.setState({ minutes: e})}
-					      	/>
-					      	<Text style={styles(this.state).time}>minutes</Text>
-				      	</View>
-				      	<Text style={styles(this.state).headers}>Quote (dollars)</Text>
-						<TextInput
-				        style={styles(this.state).quote_input}
-				        onChangeText={(e) => this.setState({ quote: e})}
-				      	/>
-		      	
-		      	
+					
+					
 		      		  	<Text style={styles(this.state).headers}>Customer *</Text>
 	    
 					    <DropDownPicker
@@ -173,6 +145,7 @@ export default class NewJob extends React.Component {
 								height: 40 * rem,
 							    borderWidth: 2 * rem,
 							    borderColor: Object.values(this.state.bcolours)[5],
+							    marginBottom: 10 * rem
 							}}
 							textStyle={{
 								fontSize: 16 * rem	
@@ -206,7 +179,35 @@ export default class NewJob extends React.Component {
 							}}
 					
 					      />
-	
+						<Text style={styles(this.state).headers}>Job description *</Text>
+				 		<TextInput
+				        style={styles(this.state).job_input}
+				        onChangeText={(e) => this.setState({ job_desc: e})}
+				      	/>
+						<Text style={styles(this.state).headers}>Job Address *</Text>
+						<TextInput
+				        style={styles(this.state).address_input}
+				        onChangeText={(e) => this.setState({ job_address: e})}
+				      	/>
+				      	<Text style={styles(this.state).headers}>Estimated time</Text>
+				      	<View style={{ flexDirection: 'row'}}>
+							<TextInput
+					        style={styles(this.state).hour_input}
+					        onChangeText={(e) => this.setState({ hours: e})}
+					      	/>
+					      	<Text style={styles(this.state).time}>hour(s)</Text>
+							<TextInput
+					        style={styles(this.state).minute_input}
+					        onChangeText={(e) => this.setState({ minutes: e})}
+					      	/>
+					      	<Text style={styles(this.state).time}>minutes</Text>
+				      	</View>
+				      	<Text style={styles(this.state).headers}>Quote (dollars)</Text>
+						<TextInput
+				        style={styles(this.state).quote_input}
+				        onChangeText={(e) => this.setState({ quote: e})}
+				      	/>
+		      	
 						<View style={styles(this.state).buttonConfirmContainer}>
 							<TouchableOpacity 
 								disabled={this.state.button}
