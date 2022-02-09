@@ -62,7 +62,7 @@ export default class EditData extends React.Component {
 			try {
 				var response = await axios.post(this.state.ip + "EditJob", payload)
 				if (response.data == 'Done') {
-					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
 				} else {
 					alert('Something broke')
 					this.setState({button:false})
@@ -80,7 +80,7 @@ export default class EditData extends React.Component {
 			try {
 				var response = await axios.post(this.state.ip + "DeleteJob", payload)
 				if (response.data == 'Done') {
-					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
 				} else {
 					alert('Something broke')
 					this.setState({button:false})
@@ -103,6 +103,7 @@ export default class EditData extends React.Component {
     );
 	
 	componentDidMount() {
+
 		if(this.state.hours == 'NA') {
 			this.setState({hours: '', minutes: ''})
 		}
@@ -112,7 +113,6 @@ export default class EditData extends React.Component {
 	}
 	
   	render() {
-
         	return (
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).buttonCont}>

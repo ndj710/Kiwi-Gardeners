@@ -167,11 +167,12 @@ app.post("/SearchCustomer", async (req, res) => {
 	}
 })
 
-app.post("/SearchAllJobs", async (req, res) => {
-	console.log('broke at searchall')
+app.post("/SearchCompleteJobs", async (req, res) => {
+	console.log('broke at searchcomplete')
 	let check = await checkpw(req.body.pass);
 	if (check == 'Password is correct') {
-		let q = 'SELECT jobs.id, full_name, ph_num, address AS cust_address, job_desc, job_address, comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id ORDER BY created_at DESC';
+		let q = 'SELECT jobs.id, full_name, ph_num, address AS cust_address, job_desc, job_address, comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id WHERE job_status = "Complete"'
+		+ ' ORDER BY created_at DESC';
 		const query = util.promisify(connection.query).bind(connection);
 		let result = await query(q);
 		res.send(result);

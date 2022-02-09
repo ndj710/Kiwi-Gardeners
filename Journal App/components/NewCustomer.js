@@ -43,7 +43,7 @@ export default class NewCustomer extends React.Component {
 			try {
 				var response = await axios.post(this.state.ip + "NewCust", payload)
 				if (this.state.jobData.length == 0) {
-					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
 				} else {
 					let cust_id = Object.values(response.data)[0].id
 					let payload = { pass: this.state.pass, job_desc: this.state.jobData.job_desc, job_address: this.state.jobData.job_address,
@@ -51,7 +51,7 @@ export default class NewCustomer extends React.Component {
 													 	cust_id: cust_id}
 
 					var response = await axios.post(this.state.ip + "NewJob", payload)
-					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
 				}
 			} catch (error) {
 				console.log(error);

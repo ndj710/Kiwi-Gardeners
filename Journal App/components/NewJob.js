@@ -80,7 +80,7 @@ export default class NewJob extends React.Component {
 			try {
 				var response = await axios.post(this.state.ip + "NewJob", payload)
 				if (response.data == 'Done') {
-					this.props.navigation.navigate( 'Data', { server: this.state.ip, pass: this.state.pass} );
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass} );
 				}
 			} catch (error) {
 				console.log(error);

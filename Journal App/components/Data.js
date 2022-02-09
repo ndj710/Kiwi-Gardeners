@@ -4,7 +4,9 @@ import axios from 'axios';
 import { isAlphaNumeric, convertTime, getWindowValues } from '../numeric.js';
 import Icon from 'react-native-vector-icons/Feather';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
-
+import { CurrentJobs } from './CurrentJobs.js';
+import { CompleteJobs } from './CompleteJobs.js';
+import { Customers } from './Customers.js';
 const {height, rem, width} = getWindowValues()
 
 
@@ -14,29 +16,25 @@ export default class Data extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			loading: true,
-			curjobData: [],
-			alljobData: [],
-			custData: [],
-			displayCur: [],
-			displayAll: [],
-			displayCust: [],
+			loading: true, reload: this.props.route.params.reload ?? false,
 			pass: this.props.route.params.pass,
 			ip: this.props.route.params.server,
-			searchbox: '',
-			curjob: true,
-			alljob: false,
-			cust: false,
-			currentPage: 'Current Jobs',
+			displayList: null, searchbox: '',
+			curjobData: [], completejobData: [], custData: [],
+			displayCur: [], displayCompelte: [], displayCust: [],
+			curjob: true, completejob: false, cust: false,
+			currentPage: 'Current Jobs', text: '',
+			newItem: [<Icon name="user-plus" size={40 * rem} color="black"/> ,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, cust_data: this.state.custData, password: this.state.pass })],
 			curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
-			allJobIcon: <Icon name="book" size={30 * rem} color="black"/>,
+			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>,
 			custIcon: <Icon name="users" size={30 * rem} color="black"/>,
 			newUserIcon: <Icon name="user-plus" size={40 * rem} color="black"/>,
 			newJobIcon: <FontIcon name="sticky-note-o" size={40 * rem} color="black"/>,
 		}
+		this.timer = null;
 	}
 
-	confirmSearch(val)  {
+	confirmSearch(val) {
 		if (isAlphaNumeric(val)) {
 			this.setState({searchbox: val})
 			let searchedString = val.toLowerCase()
@@ -45,9 +43,13 @@ export default class Data extends React.Component {
 			this.state.curjobData.forEach((element) => {
 				let values = Object.values(element)
 				for (var i = 0; i < values.length; i++) {
-					if (values[i].toString().toLowerCase().includes(searchedString)) {	
-						searchdata.push(element)
-						break;
+					try {
+						if (values[i] != null && values[i].toString().toLowerCase().includes(searchedString)) {	
+							searchdata.push(element)
+							break;
+						}
+					} finally {
+						
 					}
 				}
 			})
@@ -55,35 +57,55 @@ export default class Data extends React.Component {
 			
 			
 			searchdata = []
-			this.state.alljobData.forEach((element) => {
+			this.state.completejobData.forEach((element) => {
 				let values = Object.values(element)
 				for (var i = 0; i < values.length; i++) {
-					if (values[i].toString().toLowerCase().includes(searchedString)) {	
-						searchdata.push(element)
-						break;
+					try {
+						if (values[i] != null && values[i].toString().toLowerCase().includes(searchedString)) {	
+							searchdata.push(element)
+							break;
+						}
+					} finally {
+						
 					}
 				}
 			})
-			this.setState({displayAll: searchdata})	
+			this.setState({displayComplete: searchdata})	
 			
 			
 			searchdata = []
 			this.state.custData.forEach((element) => {
 				let values = Object.values(element)
 				for (var i = 0; i < values.length; i++) {
-					if (values[i].toString().toLowerCase().includes(searchedString)) {	
-						searchdata.push(element)
-						break;
+					try {
+						if (values[i] != null && values[i].toString().toLowerCase().includes(searchedString)) {	
+							searchdata.push(element)
+							break;
+						}
+					} finally {
+						
 					}
 				}
 			})
-			this.setState({displayCust: searchdata})		
+			this.setState({displayCust: searchdata})
+			this.refreshList()
 					
 		} else {
 			alert('Input must be letters/numbers only')
 		}
 	}
 	
+	refreshList() {
+		if (this.state.curjob) {
+			this.setState({ displayList: <CurrentJobs state={this.state} />})					
+		}
+		if (this.state.completejob) {
+			this.setState({ displayList: <CompleteJobs state={this.state} />})					
+		}
+		if (this.state.cust) {
+			this.setState({ displayList: <Customers state={this.state} />})					
+		}
+	}
 	
 	async getData() {
 		let payload = { pass: this.state.pass }
@@ -93,18 +115,24 @@ export default class Data extends React.Component {
 	     		return response.data
 	  		})
 	  		.then(val => {
+				val.forEach((element) => {
+					element['time'] = convertTime(element.est_time)
+				})
 				this.setState({ curjobData: val});	
 	  		})
 	  		.catch(error => {
 	     		console.log(error)
 	  		})
 		await axios
-	  		.post(this.state.ip + "SearchAllJobs", payload)
+	  		.post(this.state.ip + "SearchCompleteJobs", payload)
 	  		.then(response => {
 	     		return response.data
 	  		})
 	  		.then(val => {
-				this.setState({ alljobData: val});	
+				val.forEach((element) => {
+					element['time'] = convertTime(element.est_time)
+				})
+				this.setState({ completejobData: val});	
 	  		})
 	  		.catch(error => {
 	     		console.log(error)
@@ -121,287 +149,146 @@ export default class Data extends React.Component {
 	     		console.log(error)
 	  		})
 			if (this.state.searchbox == '') {
-				this.setState({displayCur: this.state.curjobData, displayAll: this.state.alljobData, displayCust: this.state.custData})			
+				this.setState({displayCur: this.state.curjobData, displayComplete: this.state.completejobData, displayCust: this.state.custData})
+				this.refreshList()
 			} else {
 				this.confirmSearch(this.state.searchbox)
 			}
 	}
 
-	componentDidMount() {
-	  	this.focusListener = this.props.navigation.addListener('focus', async () => {
-			this.setState({displayCur: [], displayAll: [], displayCust: []})	
-			this.setState({loading: true})
-			await this.getData()
-			this.setState({loading: false})	
-	  });
-	}
 	
 	handleBottomMenu(button) {
 		if (button == 'curJob') {
 			this.setState({currentPage: 'Current Jobs', curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
-																	 allJobIcon: <Icon name="book" size={30 * rem} color="black"/>,
-																	 custIcon: <Icon name="users" size={30 * rem} color="black"/>, curjob: true, cust: false, alljob: false})			
-		} else if (button == 'allJob') {
-			this.setState({currentPage: 'All Jobs', curJobIcon: <Icon name="tool" size={30 * rem} color="black"/>,
-																	 allJobIcon: <Icon name="book" size={40 * rem} color="red"/>,
-																	 custIcon: <Icon name="users" size={30 * rem} color="black"/>, curjob: false, cust: false, alljob: true})			
+			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>, custIcon: <Icon name="users" size={30 * rem} color="black"/>,
+			curjob: true, cust: false, completejob: false, displayList: <CurrentJobs state={this.state} />,
+			newItem: [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
+			})		
+		} else if (button == 'completejob') {
+			this.setState({currentPage: 'Complete Jobs', curJobIcon: <Icon name="tool" size={30 * rem} color="black"/>,
+			completeJobIcon: <Icon name="book" size={40 * rem} color="red"/>, custIcon: <Icon name="users" size={30 * rem} color="black"/>,
+			curjob: false, cust: false, completejob: true, displayList: <CompleteJobs state={this.state} />,
+			newItem: [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
+			})			
 		} else if (button == 'cust') {
 			this.setState({currentPage: 'Customers', curJobIcon: <Icon name="tool" size={30 * rem} color="black"/>,
-																	 allJobIcon: <Icon name="book" size={30 * rem} color="black"/>,
-																	 custIcon: <Icon name="users" size={40 * rem} color="red"/>, curjob: false, cust: true, alljob: false})			
+			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>, custIcon: <Icon name="users" size={40 * rem} color="red"/>,
+			curjob: false, cust: true, completejob: false, displayList: <Customers state={this.state} />,
+			newItem: [this.state.newUserIcon,'New Customer', () => this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: [], cust_data: [], password: this.state.pass })]
+			})
 		}
+	}
+    
+    changeText(val) {
+		this.setState({text: val})
 	}
 	
-	pageLayout(style, displaydata, render, newItem) {
-		return (
-				<View style={styles(this.state).container}>
-					<View style={styles(this.state).headerContainer}>
-					<Text style={styles(this.state).headerPage}>{this.state.currentPage}</Text>
-					</View>
-		            <View style={styles(this.state).listContainer}>
-
-						{this.state.loading && <ActivityIndicator color={"black"} size='large' />}
-
-		                <FlatList
-		                initialNumToRender={2}
-		                    style={style}
-		                    initialNumToRender={7}
-		                    data={displaydata}
-		                    renderItem={({ item }) => render(item)}
-		                    keyExtractor={item => item.id}
-		                    showsVerticalScrollIndicator={false}
-		                ></FlatList>
-		            </View>
-			            <View style={styles(this.state).searchbar}>
-					 		<TextInput 
-					        style={styles(this.state).searchbox}
-					        placeholder="Filter search"
-					        onChangeText={(val) => this.confirmSearch(val)}
-		      				/>
-							<TouchableOpacity 
-								style={styles(this.state).newItem}
-					        	onPress={newItem[2]}
-					        	activeOpacity={0.4}>
-					        	{newItem[0]}
-					        	<Text style={styles(this.state).newItemButtons}>{newItem[1]}</Text>
-					      	</TouchableOpacity>
-			            </View>
-			            <View style={styles(this.state).boxhold}>
-							<TouchableOpacity 
-								style={styles(this.state).bottomButton}
-								disabled={this.state.curjob}
-					        	onPress={() => {
-												this.handleBottomMenu('curJob')
-										}}
-					        	activeOpacity={0.4}>
-					        	{this.state.curJobIcon}
-					        	<Text style={styles(this.state).bottomCurJobButton}>Current Jobs</Text>
-					      	</TouchableOpacity>
-							<TouchableOpacity 
-								style={styles(this.state).bottomButton}
-								disabled={this.state.alljob}
-					        	onPress={() => {
-												this.handleBottomMenu('allJob')
-										}}
-					        	activeOpacity={0.4}>
-					        	{this.state.allJobIcon}
-					        	<Text style={styles(this.state).bottomAllJobButton}>All Jobs</Text>
-					      	</TouchableOpacity>
-							<TouchableOpacity 
-								style={styles(this.state).bottomButton}
-								disabled={this.state.cust}
-					        	onPress={() => {
-												this.handleBottomMenu('cust')
-										}}
-					        	activeOpacity={0.4}>
-								<View>
-					        	{this.state.custIcon}
-					        	</View>
-					        	<Text style={styles(this.state).bottomCustomersButton}>Customers</Text>
-					      	</TouchableOpacity>
-			            </View>
-		            </View>
-		)
+   	handleCheck = () => {
+    	clearTimeout(this.timer);
+    	this.timer = setTimeout(() => {
+      		this.confirmSearch(this.state.text);
+    	}, 500);
+  	}
+  
+     
+	async componentDidMount() {
+		this.setState({loading: true})
+		await this.getData()
+		this.setState({loading: false})
+		this.focusListener = this.props.navigation.addListener('focus', async () => {
+				this.setState({reload: this.props.route.params.reload ?? false})
+		})
 	}
-    renderJob = job => {
-		var time = convertTime(job.est_time)			
-        return (
-            <View style={styles(this.state).jobItem}>
-                <View style={{ flex: 1 }}>
-                    <TouchableOpacity style={styles(this.state).opac}
-		       			onPress={
-						() => this.props.navigation.navigate('Edit job', { server: this.state.ip, items: job, password: this.state.pass })
-						}>
-                    	<View style={{ flexDirection: "column", flex: 1, justifyContent: 'space-evenly' }}>
-                     		<View style={{ flexDirection: "row", flex: 1, justifyContent: 'space-evenly' }}>
-                        	    <Text style={styles(this.state).job_header_desc}>Job: {job.job_desc}</Text>
-
-                        	    <Text style={styles(this.state).job_header_status}>Status: {job.job_status}</Text>
-                        	 </View>
-                        	<View style={{flexDirection: "row", flex: 1, justifyContent: 'space-evenly'  }}>
-
-	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}>Customer</Text>
-									<Text style={styles(this.state).name}>{job.full_name}</Text>
-				 					<Text style={styles(this.state).name}>{job.cust_address}</Text>
-									<Text style={styles(this.state).name}>{job.ph_num}</Text>
-	                        	</View>
-	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}>Job Details </Text>
-									<Text style={styles(this.state).name}>{time.hours} hrs {time.minutes} mins</Text>
-									<Text style={styles(this.state).name}>${job.quote}</Text>	
-				 					<Text style={styles(this.state).name}>{job.job_address}</Text>
-	                            </View>                        	
-	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}>Comments </Text>
-                        	    	<Text style={styles(this.state).name}>{job.comments}</Text>
-							</View>
-
-                            </View>
-                		</View>
-                   	</TouchableOpacity>
-                </View>
-            </View>
-        );
-    };
     
-    renderAllJob = alljob => {
-		let time = convertTime(alljob.est_time)
-        return (
-            <View style={styles(this.state).jobItem}>
-                <View style={{ flex: 1 }}>
-                    <TouchableOpacity style={styles(this.state).opac}
-		       			onPress={
-						() => this.props.navigation.navigate('Edit job', { server: this.state.ip, items: alljob, password: this.state.pass })
-						}>
-                    	<View style={{ flexDirection: "column", flex: 1, justifyContent: 'space-evenly' }}>
-                    		<View style={{ flexDirection: "row", flex: 1, justifyContent: 'space-evenly' }}>
-                        	    <Text style={styles(this.state).job_header_desc}>Job: {alljob.job_desc}</Text>
+   	shouldComponentUpdate(nextProps, nextState) {
+		if (nextProps == this.props && nextState == this.state) {
+			return false
+		}
+		return true
+	}
+	
+	async componentDidUpdate(prevProps, prevState) {
+		if (prevState.reload == false && this.state.reload == true) {	
+			this.setState({loading: true})
+			await this.getData()
+			this.setState({loading: false, reload: false})
+			this.props.route.params.reload = false
 
-                        	    <Text style={styles(this.state).job_header_status}>Status: {alljob.job_status}</Text>
-                        	 </View>
-                        	<View style={{flexDirection: "row", flex: 1, justifyContent: 'space-evenly'  }}>
-
-	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}>Customer</Text>
-									<Text style={styles(this.state).name}>{alljob.full_name}</Text>
-				 					<Text style={styles(this.state).name}>{alljob.cust_address}</Text>
-									<Text style={styles(this.state).name}>{alljob.ph_num}</Text>
-	                        	</View>
-	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}>Job Details</Text>
-									<Text style={styles(this.state).name}>{time.hours} hrs {time.minutes} mins</Text>
-									<Text style={styles(this.state).name}>${alljob.quote}</Text>	
-				 					<Text style={styles(this.state).name}>{alljob.job_address}</Text>
-	                            </View>                        	
-	                        	<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}>Comments </Text>
-                        	    	<Text style={styles(this.state).name}>{alljob.comments}</Text>
-							</View>
-
-                            </View>
-                		</View>
-                   	</TouchableOpacity>
-                </View>
-            </View>
-        );
-    };
-
-
-
-    renderCustomer = customer => {
-        return (
-            <View style={styles(this.state).customerItem}>
-                <View style={{ flex: 1 }}>
-                    <TouchableOpacity
-                    	style={styles(this.state).custButtonEdit}
-		       			onPress={
-						() => this.props.navigation.navigate('Edit customer', { server: this.state.ip, items: customer, password: this.state.pass })
-						}>
-                    	<View style={{ flexDirection: "column", flex: 1, justifyContent: 'space-evenly' }}>
-                        	<View style={{flexDirection: "row", flex: 1, justifyContent: 'space-evenly' }}>
-                        		<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}>Name </Text>
-									<Text style={styles(this.state).name}>{customer.full_name}</Text>
-								</View>
-								<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}>Address </Text>
-			 						<Text style={styles(this.state).name}>{customer.address}</Text>
-			 					</View>
-			 					<View style={styles(this.state).sections}>
-									<Text style={styles(this.state).header}>Phone </Text>
-									<Text style={styles(this.state).name}>{customer.ph_num}</Text>
-								</View>
-                        	 </View>
-                		</View>
-                   	</TouchableOpacity>
-                </View>
-            </View>
-        );
-    };
+		}
+	    if (prevState.text !== this.state.text) {
+      		this.handleCheck();
+    	}
+  	}
     
      render() {
-		if (this.state.curjob) {
-			let newJob = [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
-	        return (
-				this.pageLayout(styles(this.state).jobs, this.state.displayCur, this.renderJob, newJob)
-	        );
-		} else if (this.state.alljob) {
-			let newJob = [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
-			return (
-				this.pageLayout(styles(this.state).jobs, this.state.displayAll, this.renderAllJob, newJob)
-		    );			
-    	} else if (this.state.cust) {
-			let newCust = [this.state.newUserIcon,'New Customer', () => this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: [], cust_data: [], password: this.state.pass })]
-			return (
-				this.pageLayout(styles(this.state).customers, this.state.displayCust, this.renderCustomer, newCust)
-		    );
-		}
+		return (
+			<View style={styles(this.state).container}>
+				<View style={styles(this.state).headerContainer}>
+				<Text style={styles(this.state).headerPage}>{this.state.currentPage}</Text>
+				</View>
+	            <View style={styles(this.state).listContainer}>
+	            	{this.state.loading && <ActivityIndicator color="black" size="large"  />}
+					{this.state.displayList}
+				</View>
+				
+	            <View style={styles(this.state).searchbar}>
+			 		<TextInput 
+			        style={styles(this.state).searchbox}
+			        placeholder="Filter search"
+			        onChangeText={(val) => this.changeText(val)}
+      				/>
+					<TouchableOpacity 
+						style={styles(this.state).newItem}
+			        	onPress={this.state.newItem[2]}
+			        	activeOpacity={0.4}>
+			        	{this.state.newItem[0]}
+			        	<Text style={styles(this.state).newItemButtons}>{this.state.newItem[1]}</Text>
+			      	</TouchableOpacity>
+	            </View>
+				
+			 	<View style={styles(this.state).boxhold}>
+					<TouchableOpacity 
+						style={styles(this.state).bottomButton}
+						disabled={this.state.curjob}
+			        	onPress={() => {
+										this.handleBottomMenu('curJob')
+								}}
+			        	activeOpacity={0.4}>
+			        	{this.state.curJobIcon}
+			        	<Text style={styles(this.state).bottomCurJobButton}>Current Jobs</Text>
+			      	</TouchableOpacity>
+					<TouchableOpacity 
+						style={styles(this.state).bottomButton}
+						disabled={this.state.completejob}
+			        	onPress={() => {
+										this.handleBottomMenu('completejob')
+								}}
+			        	activeOpacity={0.4}>
+			        	{this.state.completeJobIcon}
+			        	<Text style={styles(this.state).bottomCompleteJobButton}>Complete Jobs</Text>
+			      	</TouchableOpacity>
+					<TouchableOpacity 
+						style={styles(this.state).bottomButton}
+						disabled={this.state.cust}
+			        	onPress={() => {
+										this.handleBottomMenu('cust')
+								}}
+			        	activeOpacity={0.4}>
+						<View>
+			        	{this.state.custIcon}
+			        	</View>
+			        	<Text style={styles(this.state).bottomCustomersButton}>Customers</Text>
+			      	</TouchableOpacity>
+		        </View>
+		 	</View>
+ 		);
     }
-
 }
 
-
-
-
 const styles = (state) => StyleSheet.create({
-	job_header_desc: {	
-        paddingTop: 5 * rem,
-        paddingBottom: 5 * rem,
-        fontSize: 23 * rem,
-
-	},
-	job_header_status: {	
-        paddingTop: 5 * rem,
-        paddingBottom: 5 * rem,
-        fontSize: 23 * rem,
-
-	},
-	sections: {
-		flexDirection: "column",
-		flex: 0.5,
-        paddingBottom: 3 * rem,
-	},
-
-    headerTitle: {
-        fontSize: 20 * rem,
-        fontWeight: "500"
-    },
-    jobs: {
-        marginHorizontal: 16 * rem
-    },
-    jobItem: {
-        backgroundColor: "#FFF",
-        borderRadius: 5 * rem,
-        padding: 8 * rem,
-        flexDirection: "row",
-        marginVertical: 5 * rem
-    },
-	// Whole screen
 	container: {
 		flex: 1,
-        backgroundColor: "#EBECF4",
-
+        backgroundColor: "#ebecf4",
     },
     headerContainer: {
 		justifyContent: "center",
@@ -413,68 +300,13 @@ const styles = (state) => StyleSheet.create({
 	headerPage: {
 		fontSize: 30 * rem,
 	},
-    // List (data) container
 	listContainer: {
-		backgroundColor: '#e6e6eb',
+		backgroundColor: '#ebecf4',
 		flex: 7,
 
 	},
-	// Data objects in list container
-	customers: {
-        marginHorizontal: 16 * rem
-    },
-    customerItem: {
-        backgroundColor: "#FFF",
-        borderRadius: 5 * rem,
-        padding: 8 * rem,
-        flexDirection: "row",
-        marginVertical: 8 * rem
-    },
-    header: {
-		justifyContent: 'space-evenly',
-        paddingTop: 5 * rem,
-        paddingBottom: 5 * rem,
-		paddingLeft: 3 * rem,
-        backgroundColor: "#FFF",
-        alignItems: "center",
-        borderBottomWidth: 1 * rem,
-        borderBottomColor: "#EBECF4",
-        fontSize: 20 * rem,
-
-    },
-    custName: {
-		justifyContent: 'flex-start',
-        fontSize: 20 * rem,
-        fontWeight: "500",
-        color: "#454D65",
-        flex: 0.3
-	},
-    custAddress: {
-		justifyContent: 'center',
-        fontSize: 20 * rem,
-        fontWeight: "500",
-        color: "#454D65",
-        flex: 0.3
-	},
-    custPhone: {
-		justifyContent: 'flex-end',
-        fontSize: 20 * rem,
-        fontWeight: "500",
-        color: "#454D65",
-        flex: 0.3
-	},
-    name: {
-		paddingLeft: 3 * rem,
-        fontSize: 17 * rem,
-        fontWeight: "500",
-        color: "#454D65"
-    },
-    // Buttons etc outside of list container
-
 	boxhold: {
 		backgroundColor: '#dcdff2',
-        borderTopWidth: 2 * rem,
-        borderTopColor: "lightgrey",
 		flexDirection: 'row',
 		paddingBottom: 5 * rem,
 		paddingTop: 5 * rem,
@@ -487,15 +319,15 @@ const styles = (state) => StyleSheet.create({
 		paddingBottom: 20 * rem,
 		paddingTop: 20 * rem,
 		flex: 0.5,
-
+		backgroundColor: '#ebecf4'
 	},
 	searchbox: {
-		paddingLeft: 10 * rem,
+		paddingLeft: 15 * rem,
 		flexDirection: 'row',
 		flex: 0.6,
-		borderWidth: 1 * rem,
 		marginBottom: 10 * rem,
 		fontSize: 20 * rem,
+		borderRadius: 20 * rem,
 		backgroundColor: 'white'
 	},
 	newItem: {
@@ -517,8 +349,8 @@ const styles = (state) => StyleSheet.create({
 		fontSize: 14 * rem,
 		paddingTop: 10 * rem
 	},
-	bottomAllJobButton: {
-		color: state.allJobIcon['props'].color,
+	bottomCompleteJobButton: {
+		color: state.completeJobIcon['props'].color,
 		fontSize: 14 * rem,
 		paddingTop: 10 * rem
 	},

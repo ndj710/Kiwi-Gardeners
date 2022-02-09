@@ -44,7 +44,7 @@ export default class EditCustomer extends React.Component {
 
 				var response = await axios.post(this.state.ip + "EditCust", payload)
 				if (response.data == 'Done') {
-					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
 				} else {
 					alert('Something broke')
 					this.setState({button:false})
@@ -62,7 +62,7 @@ export default class EditCustomer extends React.Component {
 			try {
 				var response = await axios.post(this.state.ip + "DeleteCust", payload)
 				if (response.data == 'Done') {
-					this.props.navigation.navigate( 'Data', {server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
 				} else if (response.data == 'Cannot delete') {
 					alert("Can't delete customer with jobs")
 				} else {
