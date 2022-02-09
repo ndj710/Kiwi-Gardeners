@@ -132,7 +132,6 @@ export default class NewJob extends React.Component {
   	}
 
   	render() {
-	console.log(this.state.items)
         	return (
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).innerContainer}>
