@@ -21,7 +21,7 @@ export default class Data extends React.Component {
 			curjobData: [], completejobData: [], custData: [],
 			displayCur: [], displayCompelte: [], displayCust: [],
 			curjob: true, completejob: false, cust: false,
-			currentPage: 'Current Jobs', text: '',
+			currentPage: 'Current Jobs', text: '', searchborder: '#ebecf4',
 			newItem: [<Icon name="user-plus" size={40 * rem} color="black"/> ,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, cust_data: this.state.custData, password: this.state.pass })],
 			curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
 			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>,
@@ -53,7 +53,7 @@ export default class Data extends React.Component {
 
 	confirmSearch(val) {
 		if (isAlphaNumeric(val)) {
-			this.setState({searchbox: val})
+			this.setState({searchbox: val, searchborder: '#ebecf4'})
 			
 			this.setState({displayCur: this.searchData(this.state.curjobData)})	
 			this.setState({displayComplete: this.searchData(this.state.completejobData)})
@@ -62,6 +62,8 @@ export default class Data extends React.Component {
 			this.refreshList()
 					
 		} else {
+			this.setState({searchborder: 'red'})
+			this.textInput.blur()
 			alert('Input must be letters/numbers only')
 		}
 	}
@@ -204,6 +206,7 @@ export default class Data extends React.Component {
 				
 	            <View style={styles(this.state).searchbar}>
 			 		<TextInput 
+			 		ref={input => { this.textInput = input }}
 			        style={styles(this.state).searchbox}
 			        placeholder="Filter search"
 			        onChangeText={(val) => this.changeText(val)}
@@ -299,6 +302,8 @@ const styles = (state) => StyleSheet.create({
 		marginBottom: 10 * rem,
 		fontSize: 20 * rem,
 		borderRadius: 20 * rem,
+		borderWidth: 1 * rem,
+		borderColor: state.searchborder,
 		backgroundColor: 'white'
 	},
 	newItem: {
