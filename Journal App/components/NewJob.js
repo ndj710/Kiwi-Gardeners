@@ -132,6 +132,7 @@ export default class NewJob extends React.Component {
   	}
 
   	render() {
+	console.log(this.state.items)
         	return (
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).innerContainer}>
@@ -159,7 +160,9 @@ export default class NewJob extends React.Component {
 					      	searchable={true}
 					        open={this.state.open}
 					        value={this.state.value}
-					        items={this.state.items}
+					        items={this.state.items} 
+					        itemKey="id"
+					        showTickIcon={false}
 					        setOpen={() => {
 										if (this.state.open) {
 											this.setState({open: false})

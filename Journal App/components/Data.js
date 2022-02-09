@@ -7,12 +7,10 @@ import FontIcon from 'react-native-vector-icons/FontAwesome';
 import { CurrentJobs } from './CurrentJobs.js';
 import { CompleteJobs } from './CompleteJobs.js';
 import { Customers } from './Customers.js';
+
 const {height, rem, width} = getWindowValues()
 
-
-
 export default class Data extends React.Component {
-	
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -34,60 +32,33 @@ export default class Data extends React.Component {
 		this.timer = null;
 	}
 
+	searchData(list) {
+		let searchedString = this.state.searchbox.toLowerCase()
+		let searchdata = []
+		list.forEach((element) => {
+			let values = Object.values(element)
+			for (var i = 0; i < values.length; i++) {
+				try {
+					if (values[i] != null && values[i].toString().toLowerCase().includes(searchedString)) {	
+						searchdata.push(element)
+						break;
+					}
+				} finally {
+					
+				}
+			}
+		})
+		return searchdata
+	}
+
 	confirmSearch(val) {
 		if (isAlphaNumeric(val)) {
 			this.setState({searchbox: val})
-			let searchedString = val.toLowerCase()
 			
-			let searchdata = []
-			this.state.curjobData.forEach((element) => {
-				let values = Object.values(element)
-				for (var i = 0; i < values.length; i++) {
-					try {
-						if (values[i] != null && values[i].toString().toLowerCase().includes(searchedString)) {	
-							searchdata.push(element)
-							break;
-						}
-					} finally {
-						
-					}
-				}
-			})
-			this.setState({displayCur: searchdata})
+			this.setState({displayCur: this.searchData(this.state.curjobData)})	
+			this.setState({displayComplete: this.searchData(this.state.completejobData)})
+			this.setState({displayCust: this.searchData(this.state.custData)})
 			
-			
-			searchdata = []
-			this.state.completejobData.forEach((element) => {
-				let values = Object.values(element)
-				for (var i = 0; i < values.length; i++) {
-					try {
-						if (values[i] != null && values[i].toString().toLowerCase().includes(searchedString)) {	
-							searchdata.push(element)
-							break;
-						}
-					} finally {
-						
-					}
-				}
-			})
-			this.setState({displayComplete: searchdata})	
-			
-			
-			searchdata = []
-			this.state.custData.forEach((element) => {
-				let values = Object.values(element)
-				for (var i = 0; i < values.length; i++) {
-					try {
-						if (values[i] != null && values[i].toString().toLowerCase().includes(searchedString)) {	
-							searchdata.push(element)
-							break;
-						}
-					} finally {
-						
-					}
-				}
-			})
-			this.setState({displayCust: searchdata})
 			this.refreshList()
 					
 		} else {
