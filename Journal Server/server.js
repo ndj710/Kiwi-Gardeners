@@ -44,7 +44,7 @@ const key = array[5].replace("\r", '');
 var hash = crypto.createHmac('sha512', key)
 hash.update(password)
 var value = hash.digest('hex')
-var q = 'UPDATE users SET user_password="' + value + '" WHERE username="dallas.m.timpson@gmail.com"';
+var q = 'UPDATE users SET user_password="' + value + '" WHERE username LIKE "%@gmail.com%"';
 connection.query(q, function(error, results, fields) {
 	if (error) throw error;
 });
@@ -57,12 +57,14 @@ checkpw = async (email, password) => {
 	try {
 		const query = util.promisify(connection.query).bind(connection);
 		var result = await query(q);
-		if (value == result[0].password) {
-			answer = {pass: 'correct', account: result[0].account};
-		} else {
-			answer = {pass: 'incorrect', account: result[0].account};
+		if (result.length != 0) {
+			if (value == result[0].password) {
+				answer = {pass: 'correct', account: result[0].account};
+			} else {
+				answer = {pass: 'incorrect', account: result[0].account};
+			}
+			return(answer);
 		}
-		return(answer);
 	} catch (error) {
 		console.log(error);
 	}
@@ -83,7 +85,7 @@ app.post("/EditJob", async (req, res) => {
 		quote = 'null'
 	}
 	let check = await checkpw(req.body.email, req.body.pass);
-	if (check.pass == 'correct') {
+	if (check.pass == 'correct' && check.account == 'ADMIN') {
 		let q1 = 'UPDATE jobs SET job_desc="' + req.body.job_desc
 				+ '", job_address="' + req.body.job_address + '", est_time=' + req.body.est_time 
 				+ ', quote=' + quote + ', job_status="' + req.body.status + '", comments="' + req.body.comments + '" WHERE id=' + req.body.id; 
@@ -100,7 +102,7 @@ app.post("/EditJob", async (req, res) => {
 app.post("/EditCust", async (req, res) => {
 	console.log('broke at editcust')
 	let check = await checkpw(req.body.email, req.body.pass);
-	if (check.pass == 'correct') {
+	if (check.pass == 'correct' && check.account == 'ADMIN') {
 		let q1 = 'UPDATE customers SET full_name="' + req.body.full_name + '", address="' + req.body.address + '", ph_num="' + req.body.ph_num + '" WHERE id=' + req.body.id; 
 		const query = util.promisify(connection.query).bind(connection);
 		let result = await query(q1);
@@ -115,7 +117,7 @@ app.post("/DeleteJob", async (req, res) => {
 	console.log('broke at deletejob')
 	let id = req.body.id
 	let check = await checkpw(req.body.email, req.body.pass);
-	if (check.pass == 'correct') {
+	if (check.pass == 'correct' && check.account == 'ADMIN') {
 		let q1 = 'DELETE FROM jobs WHERE id=' + id; 
 		const query = util.promisify(connection.query).bind(connection);
 		let result = await query(q1);
@@ -129,7 +131,7 @@ app.post("/DeleteJob", async (req, res) => {
 app.post("/DeleteCust", async (req, res) => {
 	console.log('broke at deletecust')
 	let check = await checkpw(req.body.email, req.body.pass);
-	if (check.pass == 'correct') {
+	if (check.pass == 'correct' && check.account == 'ADMIN') {
 		try {
 		let q1 = 'DELETE FROM customers WHERE id=' + req.body.id; 
 		const query = util.promisify(connection.query).bind(connection);
@@ -147,7 +149,7 @@ app.post("/DeleteCust", async (req, res) => {
 app.post("/SearchJob", async (req, res) => {
 	console.log('broke at searchjob')
 	let check = await checkpw(req.body.email, req.body.pass);
-	if (check.pass == 'correct') {
+	if (check.pass == 'correct' && check.account == 'ADMIN') {
 		let q = 'SELECT jobs.id, full_name, ph_num, address AS cust_address, job_desc, job_address, comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id WHERE job_status = "Ongoing"'
 		+ ' ORDER BY created_at DESC';
 		const query = util.promisify(connection.query).bind(connection);
@@ -159,7 +161,7 @@ app.post("/SearchJob", async (req, res) => {
 app.post("/SearchCustomer", async (req, res) => {
 	console.log('broke at searchcust')
 	let check = await checkpw(req.body.email, req.body.pass);
-	if (check.pass == 'correct') {
+	if (check.pass == 'correct' && check.account == 'ADMIN') {
 		let q = 'SELECT * FROM customers ORDER BY full_name';
 		const query = util.promisify(connection.query).bind(connection);
 		let result = await query(q);
@@ -170,7 +172,7 @@ app.post("/SearchCustomer", async (req, res) => {
 app.post("/SearchCompleteJobs", async (req, res) => {
 	console.log('broke at searchcomplete')
 	let check = await checkpw(req.body.email, req.body.pass);
-	if (check.pass == 'correct') {
+	if (check.pass == 'correct' && check.account == 'ADMIN') {
 		let q = 'SELECT jobs.id, full_name, ph_num, address AS cust_address, job_desc, job_address, comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id WHERE job_status = "Complete"'
 		+ ' ORDER BY created_at DESC';
 		const query = util.promisify(connection.query).bind(connection);
@@ -188,9 +190,8 @@ app.post("/NewJob", async (req, res) => {
 	if (quote.length == 0) {
 		quote = 'null'
 	}
-	console.log(req.body)
 	let check = await checkpw(req.body.email, req.body.pass);
-	if (check.pass == 'correct') {
+	if (check.pass == 'correct' && check.account == 'ADMIN') {
 		let q = 'INSERT INTO jobs (job_desc, job_address, est_time, quote, cust_id) ' +
 				'VALUES ("' + req.body.job_desc + '","' + req.body.job_address + '",' + 
 				est_time + ',' + quote + ',' + req.body.cust_id + ');';
@@ -206,7 +207,7 @@ app.post("/NewJob", async (req, res) => {
 app.post("/NewCust", async (req, res) => {
 	console.log('broke at new cust')
 	let check = await checkpw(req.body.email, req.body.pass);
-	if (check.pass == 'correct') {
+	if (check.pass == 'correct' && check.account == 'ADMIN') {
 		let q = 'INSERT INTO customers (full_name, address, ph_num) ' +
 				'VALUES ("' + req.body.name + '","' + req.body.address + '","' + req.body.ph_num + '");';
 		const query = util.promisify(connection.query).bind(connection);

@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './components/Login';
 import EditJobData from './components/EditJobData';
 import Data from './components/Data';
+import EmpData from './components/EmpData';
 import EditCustomer from './components/EditCustomer';
 import NewJob from './components/NewJob';
 import NewCust from './components/NewCustomer';
@@ -21,6 +22,9 @@ export default function App() {
 					headerBackVisible: false, title: '', headerShown: false
 				}}/>
         		<Stack.Screen name='Data' component={Data} options={{
+					headerBackVisible: false, title: '', headerShown: false
+				}}/>
+        		<Stack.Screen name='Emp Data' component={EmpData} options={{
 					headerBackVisible: false, title: '', headerShown: false
 				}}/>
 		       	<Stack.Screen name='Edit job' component={EditJobData}/>

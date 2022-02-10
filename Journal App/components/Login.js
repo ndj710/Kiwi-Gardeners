@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, StatusBar, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import * as Crypto from 'expo-crypto';
 import { isAlphaNumeric, getWindowValues } from '../numeric.js';
@@ -15,7 +15,9 @@ export default class Login extends React.Component {
 		super(props)
 		this.state = {
 			password: '',
-			email: ''
+			email: '',
+			signin: false,
+			signinbutton: 'SIGN IN'
 		}
 	}
 	
@@ -28,6 +30,7 @@ export default class Login extends React.Component {
 	}
 	
   	callBackend = async () => {
+		this.setState({signin: true, signinbutton: <ActivityIndicator color="black" size="small"  />})
   		await SecureStore.setItemAsync('email', this.state.email);
 		if (isAlphaNumeric(this.state.password)) {
 			const hashed_pw = await Crypto.digestStringAsync(
@@ -41,20 +44,28 @@ export default class Login extends React.Component {
 	     		return response.data
 	  		})
 	  		.then(val => {
-				if (val.pass == 'correct' && val.account == 'ADMIN') {
-					this.props.navigation.navigate('Data', {server: ip, email: this.state.email, pass: hashed_pw });
+				if (val.pass == 'correct') {
+					if (val.account == 'ADMIN') {
+						this.props.navigation.navigate('Data', {server: ip, email: this.state.email, pass: hashed_pw })
+					}
+					if (val.account == 'EMP') {
+						this.props.navigation.navigate('Emp Data', {server: ip, email: this.state.email, pass: hashed_pw })
+					}
 					this.passInput.clear()
-					this.setState({ password: ''})
+					this.setState({ password: '', signin: false, signinbutton: 'SIGN IN'})
 				} else {
-					alert('Incorrect password');
+					alert('Incorrect email or password');
+					this.setState({signin: false, signinbutton: 'SIGN IN'})
 				}
 	  		})
 	  		.catch(error => {
 				alert('Network error');
 	     		console.log(error)
+	     		this.setState({signin: false, signinbutton: 'SIGN IN'})
 	  		})
 		} else {
 			alert('wrong data type')
+			this.setState({signin: false, signinbutton: 'SIGN IN'})
 		}
 	};
 	
@@ -95,10 +106,11 @@ export default class Login extends React.Component {
       	</View>
   		<View style={{borderColor: 'grey', borderWidth: 1 * rem, width: width * 0.7, marginLeft: 75 * rem}}></View>
 		<TouchableOpacity 
+			disabled={this.state.signin}
 			style={styles.button}
         	onPress={this.callBackend}
         	activeOpacity={0.4}>
-        	<Text style={styles.confirm}>SIGN IN</Text>
+        	<Text style={styles.confirm}>{this.state.signinbutton}</Text>
       	</TouchableOpacity>
     </View>
   );

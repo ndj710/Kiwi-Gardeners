@@ -5,29 +5,18 @@ import { isAlphaNumeric, convertTime, getWindowValues } from '../numeric.js';
 import Icon from 'react-native-vector-icons/Feather';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
 import { CurrentJobs } from './CurrentJobs.js';
-import { CompleteJobs } from './CompleteJobs.js';
-import { Customers } from './Customers.js';
 
 const {height, rem, width} = getWindowValues()
 
-export default class Data extends React.Component {
+export default class EmpData extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			loading: true, reload: this.props.route.params.reload ?? false,
 			pass: this.props.route.params.pass, email: this.props.route.params.email,
 			ip: this.props.route.params.server,
-			displayList: null, searchbox: '',
-			curjobData: [], completejobData: [], custData: [],
-			displayCur: [], displayCompelte: [], displayCust: [],
-			curjob: true, completejob: false, cust: false,
-			currentPage: 'Current Jobs', text: '', searchborder: '#ebecf4',
-			newItem: [<Icon name="user-plus" size={40 * rem} color="black"/> ,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, cust_data: this.state.custData, email: this.state.email, password: this.state.pass })],
+			displayCur: [], curjobData: [], currentPage: 'Current Jobs',
 			curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
-			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>,
-			custIcon: <Icon name="users" size={30 * rem} color="black"/>,
-			newUserIcon: <Icon name="user-plus" size={40 * rem} color="black"/>,
-			newJobIcon: <FontIcon name="sticky-note-o" size={40 * rem} color="black"/>,
 		}
 		this.timer = null;
 	}
@@ -54,11 +43,7 @@ export default class Data extends React.Component {
 	confirmSearch(val) {
 		if (isAlphaNumeric(val)) {
 			this.setState({searchbox: val, searchborder: '#ebecf4'})
-			
-			this.setState({displayCur: this.searchData(this.state.curjobData)})	
-			this.setState({displayComplete: this.searchData(this.state.completejobData)})
-			this.setState({displayCust: this.searchData(this.state.custData)})
-			
+			this.setState({displayCur: this.searchData(this.state.curjobData)})
 			this.refreshList()
 					
 		} else {
@@ -69,15 +54,7 @@ export default class Data extends React.Component {
 	}
 	
 	refreshList() {
-		if (this.state.curjob) {
-			this.setState({ displayList: <CurrentJobs state={this.state} />})					
-		}
-		if (this.state.completejob) {
-			this.setState({ displayList: <CompleteJobs state={this.state} />})					
-		}
-		if (this.state.cust) {
-			this.setState({ displayList: <Customers state={this.state} />})					
-		}
+		this.setState({ displayList: <CurrentJobs state={this.state} />})
 	}
 	
 	async getData() {
@@ -96,60 +73,6 @@ export default class Data extends React.Component {
 	  		.catch(error => {
 	     		console.log(error)
 	  		})
-		await axios
-	  		.post(this.state.ip + "SearchCompleteJobs", payload)
-	  		.then(response => {
-	     		return response.data
-	  		})
-	  		.then(val => {
-				val.forEach((element) => {
-					element['time'] = convertTime(element.est_time)
-				})
-				this.setState({ completejobData: val});	
-	  		})
-	  		.catch(error => {
-	     		console.log(error)
-	  		})
-		await axios
-	  		.post(this.state.ip + "SearchCustomer", payload)
-	  		.then(response => {
-	     		return response.data
-	  		})
-	  		.then(val => {
-				this.setState({ custData: val});
-	  		})
-	  		.catch(error => {
-	     		console.log(error)
-	  		})
-			if (this.state.searchbox == '') {
-				this.setState({displayCur: this.state.curjobData, displayComplete: this.state.completejobData, displayCust: this.state.custData})
-				this.refreshList()
-			} else {
-				this.confirmSearch(this.state.searchbox)
-			}
-	}
-
-	
-	handleBottomMenu(button) {
-		if (button == 'curJob') {
-			this.setState({currentPage: 'Current Jobs', curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
-			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>, custIcon: <Icon name="users" size={30 * rem} color="black"/>,
-			curjob: true, cust: false, completejob: false, displayList: <CurrentJobs state={this.state} />,
-			newItem: [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, email: this.state.email, password: this.state.pass })]
-			})		
-		} else if (button == 'completejob') {
-			this.setState({currentPage: 'Complete Jobs', curJobIcon: <Icon name="tool" size={30 * rem} color="black"/>,
-			completeJobIcon: <Icon name="book" size={40 * rem} color="red"/>, custIcon: <Icon name="users" size={30 * rem} color="black"/>,
-			curjob: false, cust: false, completejob: true, displayList: <CompleteJobs state={this.state} />,
-			newItem: [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, email: this.state.email, password: this.state.pass })]
-			})			
-		} else if (button == 'cust') {
-			this.setState({currentPage: 'Customers', curJobIcon: <Icon name="tool" size={30 * rem} color="black"/>,
-			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>, custIcon: <Icon name="users" size={40 * rem} color="red"/>,
-			curjob: false, cust: true, completejob: false, displayList: <Customers state={this.state} />,
-			newItem: [this.state.newUserIcon,'New Customer', () => this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: [], cust_data: [], email: this.state.email, password: this.state.pass })]
-			})
-		}
 	}
     
     changeText(val) {
@@ -186,7 +109,6 @@ export default class Data extends React.Component {
 			await this.getData()
 			this.setState({loading: false, reload: false})
 			this.props.route.params.reload = false
-
 		}
 	    if (prevState.text !== this.state.text) {
       		this.handleCheck();
@@ -277,7 +199,6 @@ const styles = (state) => StyleSheet.create({
 	listContainer: {
 		backgroundColor: '#ebecf4',
 		flex: 7,
-
 	},
 	boxhold: {
 		backgroundColor: '#dcdff2',
