@@ -29,6 +29,7 @@ export default class NewJob extends React.Component {
 			customerData: this.props.route.params.cust_data,
 			jobData: this.props.route.params.job_data,
 			pass: this.props.route.params.password,
+			email: this.props.route.params.email,
 			confirmButton: 'Confirm',
 			ip: this.props.route.params.server,
 			newCust: false,
@@ -73,14 +74,14 @@ export default class NewJob extends React.Component {
 		if (this.state.bcolours.every((element) => {return(element == 'black')}) && this.state.newCust == false) {
 
 			this.setState({button:true})
-			let payload = { pass: this.state.pass, job_desc: this.state.job_desc, job_address: this.state.job_address,
+			let payload = { email: this.state.email, pass: this.state.pass, job_desc: this.state.job_desc, job_address: this.state.job_address,
 												est_time: est_time, quote: this.state.quote,
 											 	cust_id: this.state.cust_id}
 	
 			try {
 				var response = await axios.post(this.state.ip + "NewJob", payload)
 				if (response.data == 'Done') {
-					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass} );
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, email: this.state.email, pass: this.state.pass} );
 				}
 			} catch (error) {
 				console.log(error);
@@ -89,7 +90,7 @@ export default class NewJob extends React.Component {
 			}
 		} else if (this.state.bcolours.every((element) => {return(element == 'black')}) && this.state.newCust == true) {
 				this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: {job_desc: this.state.job_desc, job_address: this.state.job_address, 
-				est_time, quote: this.state.quote}, cust_data: [], password: this.state.pass })
+				est_time, quote: this.state.quote}, cust_data: [], email: this.state.email, password: this.state.pass })
 		} else {
 			alert('Invalid input(s)')
 		}

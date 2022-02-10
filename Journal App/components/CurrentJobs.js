@@ -6,12 +6,14 @@ import * as Linking from 'expo-linking';
 
 var ip = null;
 var pass = null;
+var email = null;
 var navigation = null;
 
 
 export const CurrentJobs = (props) => {
 	ip = props.state.ip
 	pass = props.state.pass
+	email = props.state.email
 	navigation = useNavigation();
 	return (makeList(props.state.displayCur))
 }
@@ -23,7 +25,7 @@ const renderJob = ({ item }) => (
         	touchSoundDisabled={true}
         	style={styles.jobItem}
    			onPress={ 
-			() => navigation.navigate('Edit job', { server: ip, items: item, password: pass })}>
+			() => navigation.navigate('Edit job', { server: ip, items: item, email: email, password: pass })}>
          		<View style={{ flexDirection: "row"}}>
             	    <Text style={styles.job_header_desc}>{item.job_desc}</Text>
             	    <Text style={styles.job_header_status}>{item.job_status}</Text>

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Kiwi Gardeners",
     "slug": "KiwiGardeners",
-    "version": "1.0.0",
+    "version": "1.1.9",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -20,9 +20,10 @@
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+		"softwareKeyboardLayoutMode": "pan",
+      	"adaptiveIcon": {
+	        "foregroundImage": "./assets/adaptive-icon.png",
+	        "backgroundColor": "#FFFFFF"
       },
       "package": "com.spazims.journalapp"
     },

@@ -15,14 +15,14 @@ export default class Data extends React.Component {
 		super(props)
 		this.state = {
 			loading: true, reload: this.props.route.params.reload ?? false,
-			pass: this.props.route.params.pass,
+			pass: this.props.route.params.pass, email: this.props.route.params.email,
 			ip: this.props.route.params.server,
 			displayList: null, searchbox: '',
 			curjobData: [], completejobData: [], custData: [],
 			displayCur: [], displayCompelte: [], displayCust: [],
 			curjob: true, completejob: false, cust: false,
 			currentPage: 'Current Jobs', text: '', searchborder: '#ebecf4',
-			newItem: [<Icon name="user-plus" size={40 * rem} color="black"/> ,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, cust_data: this.state.custData, password: this.state.pass })],
+			newItem: [<Icon name="user-plus" size={40 * rem} color="black"/> ,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, cust_data: this.state.custData, email: this.state.email, password: this.state.pass })],
 			curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
 			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>,
 			custIcon: <Icon name="users" size={30 * rem} color="black"/>,
@@ -81,7 +81,7 @@ export default class Data extends React.Component {
 	}
 	
 	async getData() {
-		let payload = { pass: this.state.pass }
+		let payload = { email: this.state.email, pass: this.state.pass }
 		await axios
 	  		.post(this.state.ip + "SearchJob", payload)
 	  		.then(response => {
@@ -135,19 +135,19 @@ export default class Data extends React.Component {
 			this.setState({currentPage: 'Current Jobs', curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
 			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>, custIcon: <Icon name="users" size={30 * rem} color="black"/>,
 			curjob: true, cust: false, completejob: false, displayList: <CurrentJobs state={this.state} />,
-			newItem: [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
+			newItem: [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, email: this.state.email, password: this.state.pass })]
 			})		
 		} else if (button == 'completejob') {
 			this.setState({currentPage: 'Complete Jobs', curJobIcon: <Icon name="tool" size={30 * rem} color="black"/>,
 			completeJobIcon: <Icon name="book" size={40 * rem} color="red"/>, custIcon: <Icon name="users" size={30 * rem} color="black"/>,
 			curjob: false, cust: false, completejob: true, displayList: <CompleteJobs state={this.state} />,
-			newItem: [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, password: this.state.pass })]
+			newItem: [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], cust_data: this.state.custData, email: this.state.email, password: this.state.pass })]
 			})			
 		} else if (button == 'cust') {
 			this.setState({currentPage: 'Customers', curJobIcon: <Icon name="tool" size={30 * rem} color="black"/>,
 			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>, custIcon: <Icon name="users" size={40 * rem} color="red"/>,
 			curjob: false, cust: true, completejob: false, displayList: <Customers state={this.state} />,
-			newItem: [this.state.newUserIcon,'New Customer', () => this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: [], cust_data: [], password: this.state.pass })]
+			newItem: [this.state.newUserIcon,'New Customer', () => this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: [], cust_data: [], email: this.state.email, password: this.state.pass })]
 			})
 		}
 	}

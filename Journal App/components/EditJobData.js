@@ -23,6 +23,7 @@ export default class EditData extends React.Component {
 			minutes: this.time.minutes,
 			quote: this.props.route.params.items.quote,
 			pass: this.props.route.params.password,
+			email: this.props.route.params.email,
 			status: this.props.route.params.items.job_status,
 			comments: this.props.route.params.items.comments,
 			bcolours: ['black', 'black', 'black', 'black', 'black', 'black'],
@@ -55,14 +56,14 @@ export default class EditData extends React.Component {
 				est_time = null
 			}
 			this.setState({button:true})
-			let payload = { pass: this.state.pass, job_desc: this.state.job_desc, full_name: this.state.full_name,
+			let payload = { email: this.state.email, pass: this.state.pass, job_desc: this.state.job_desc, full_name: this.state.full_name,
 												job_address: this.state.job_address, ph_num: this.state.ph_num,
 												est_time: est_time, quote: this.state.quote, status: this.state.status, 
 												comments: this.state.comments, id: this.state.id }
 			try {
 				var response = await axios.post(this.state.ip + "EditJob", payload)
 				if (response.data == 'Done') {
-					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, email: this.state.email, pass: this.state.pass});
 				} else {
 					alert('Something broke')
 					this.setState({button:false})
@@ -76,11 +77,11 @@ export default class EditData extends React.Component {
 	};
 	
 	deleteJob = async () => {
-			let payload = { pass: this.state.pass, id: this.state.id }
+			let payload = { email: this.state.email, pass: this.state.pass, id: this.state.id }
 			try {
 				var response = await axios.post(this.state.ip + "DeleteJob", payload)
 				if (response.data == 'Done') {
-					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, email: this.state.email, pass: this.state.pass});
 				} else {
 					alert('Something broke')
 					this.setState({button:false})

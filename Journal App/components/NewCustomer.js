@@ -14,6 +14,7 @@ export default class NewCustomer extends React.Component {
 			jobData: this.props.route.params.job_data,
 			custData: this.props.route.params.cust_data,
 			pass: this.props.route.params.password,
+			email: this.props.route.params.email,
 			ip: this.props.route.params.server,
 			button: false
 
@@ -38,20 +39,20 @@ export default class NewCustomer extends React.Component {
 
 				
 	
-			let payload = { pass: this.state.pass, name: this.state.full_name, address: this.state.address,
+			let payload = { email: this.state.email, pass: this.state.pass, name: this.state.full_name, address: this.state.address,
 												ph_num: this.state.ph_num}
 			try {
 				var response = await axios.post(this.state.ip + "NewCust", payload)
 				if (this.state.jobData.length == 0) {
-					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, email: this.state.email, pass: this.state.pass});
 				} else {
 					let cust_id = Object.values(response.data)[0].id
-					let payload = { pass: this.state.pass, job_desc: this.state.jobData.job_desc, job_address: this.state.jobData.job_address,
+					let payload = { email: this.state.email, pass: this.state.pass, job_desc: this.state.jobData.job_desc, job_address: this.state.jobData.job_address,
 														est_time: this.state.jobData.est_time, quote: this.state.jobData.quote,
 													 	cust_id: cust_id}
 
 					var response = await axios.post(this.state.ip + "NewJob", payload)
-					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, email: this.state.email, pass: this.state.pass});
 				}
 			} catch (error) {
 				console.log(error);

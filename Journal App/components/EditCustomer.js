@@ -15,6 +15,7 @@ export default class EditCustomer extends React.Component {
 			address: this.props.route.params.items.address,
 			ph_num: this.props.route.params.items.ph_num,
 			pass: this.props.route.params.password,
+			email: this.props.route.params.email,
 			ip: this.props.route.params.server,
 			bcolours: ['black', 'black', 'black'],
 			button: false,
@@ -37,14 +38,14 @@ export default class EditCustomer extends React.Component {
 		 
 		if (this.state.bcolours.every((element) => {return(element == 'black')})) {
 			this.setState({button:true})
-			let payload = { pass: this.state.pass, full_name: this.state.full_name,
+			let payload = { email: this.state.email, pass: this.state.pass, full_name: this.state.full_name,
 												address: this.state.address, ph_num: this.state.ph_num, id: this.state.id}
 
 			try {
 
 				var response = await axios.post(this.state.ip + "EditCust", payload)
 				if (response.data == 'Done') {
-					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, email: this.state.email, pass: this.state.pass});
 				} else {
 					alert('Something broke')
 					this.setState({button:false})
@@ -58,11 +59,11 @@ export default class EditCustomer extends React.Component {
 	};
 
 	deleteJob = async () => {
-			let payload = { pass: this.state.pass, id: this.state.id }
+			let payload = { email: this.state.email, pass: this.state.pass, id: this.state.id }
 			try {
 				var response = await axios.post(this.state.ip + "DeleteCust", payload)
 				if (response.data == 'Done') {
-					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, pass: this.state.pass});
+					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, email: this.state.email, pass: this.state.pass});
 				} else if (response.data == 'Cannot delete') {
 					alert("Can't delete customer with jobs")
 				} else {

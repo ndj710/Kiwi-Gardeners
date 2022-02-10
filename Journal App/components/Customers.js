@@ -7,12 +7,14 @@ import * as Linking from 'expo-linking';
 
 var ip = null;
 var pass = null;
+var email = null;
 var navigation = null;
 const {height, rem, width} = getWindowValues()
 
 export const Customers = (props) => {
 	ip = props.state.ip
 	pass = props.state.pass
+	email = props.state.email
 	navigation = useNavigation();
 	return (makeList(props.state.displayCust))
 }
@@ -24,7 +26,7 @@ const renderCust = ({ item }) => (
         	touchSoundDisabled={true}
         	style={styles.customerItem}
    			onPress={ 
-			() => navigation.navigate('Edit customer', { server: ip, items: item, password: pass })}>
+			() => navigation.navigate('Edit customer', { server: ip, items: item, email: email, password: pass })}>
             	<View style={{ flexDirection: "column", flex: 1, justifyContent: 'space-evenly' }}>
 					<Text 	style={styles.name}>{item.full_name}</Text>
 					<Text 	style={styles.address}
