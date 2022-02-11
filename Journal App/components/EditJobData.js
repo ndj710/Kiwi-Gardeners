@@ -14,6 +14,7 @@ export default class EditData extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			
 			id: this.props.route.params.items.id,
 			job_desc: this.props.route.params.items.job_desc,
 			full_name: this.props.route.params.items.full_name,
@@ -28,9 +29,10 @@ export default class EditData extends React.Component {
 			comments: this.props.route.params.items.comments,
 			bcolours: ['black', 'black', 'black', 'black', 'black', 'black'],
 			ip: this.props.route.params.server,
+			account: this.props.route.params.account,
 			selectedItems:  ['Ongoing'],
 			items: ['Ongoing', 'Complete'],
-			button: false
+			button: false, editable: false
 
 		}
 	}
@@ -63,7 +65,11 @@ export default class EditData extends React.Component {
 			try {
 				var response = await axios.post(this.state.ip + "EditJob", payload)
 				if (response.data == 'Done') {
-					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, email: this.state.email, pass: this.state.pass});
+					if (this.state.account == 'ADMIN') {
+						this.props.navigation.navigate( 'Data', {account: this.state.account, reload: true, server: this.state.ip, email: this.state.email, pass: this.state.pass});
+					} else if (this.state.account == 'EMP') {
+						this.props.navigation.navigate( 'Emp Data', {account: this.state.account, reload: true, server: this.state.ip, email: this.state.email, pass: this.state.pass});	
+					}
 				} else {
 					alert('Something broke')
 					this.setState({button:false})
@@ -110,29 +116,34 @@ export default class EditData extends React.Component {
 		}
 		if (this.state.quote == 'NA') {
 			this.setState({quote: ''})			
-		}		
+		}
+		if (this.state.account == 'ADMIN') {
+			this.setState({editable: true})
+		}
 	}
 	
   	render() {
         	return (
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).buttonCont}>
-					<TouchableOpacity 
+					{this.state.editable && <TouchableOpacity 
 						style={styles(this.state).button}
 			        	onPress={this.createTwoButtonAlert}
 			        	activeOpacity={0.4}>
 			        	<Text>Delete</Text>
-			      	</TouchableOpacity>
+			      	</TouchableOpacity>}
 			      	</View>
 					<View style={styles(this.state).innerView}>
 						<Text style={styles(this.state).headers}>Job description *</Text>
 				 		<TextInput
+				 		editable={this.state.editable}
 				        style={styles(this.state).job_input}
 				        defaultValue={this.props.route.params.items.job_desc}
 				        onChangeText={(e) => this.setState({ job_desc: e})}
 				      	/>
 						<Text style={styles(this.state).headers}>Job Address *</Text>
 						<TextInput
+						editable={this.state.editable}
 				        style={styles(this.state).address_input}
 				        defaultValue={this.props.route.params.items.job_address}
 				        onChangeText={(e) => this.setState({ job_address: e})}
@@ -140,12 +151,16 @@ export default class EditData extends React.Component {
 				      	<Text style={styles(this.state).headers}>Estimated time</Text>
 				      	<View style={{ flexDirection: 'row'}}>
 							<TextInput
+							editable={this.state.editable}
+							placeholder='NA'
 					        style={styles(this.state).hour_input}
 					        defaultValue={this.state.hours.toString()}
 					        onChangeText={(e) => this.setState({ hours: e})}
 					      	/>
 					      	<Text style={styles(this.state).time}>hour(s)</Text>
 							<TextInput
+							editable={this.state.editable}
+							placeholder='NA'
 					        style={styles(this.state).minute_input}
 					        defaultValue={this.state.minutes.toString()}
 					        onChangeText={(e) => this.setState({ minutes: e})}
@@ -154,12 +169,14 @@ export default class EditData extends React.Component {
 				      	</View>
 				      	<Text style={styles(this.state).headers}>Quote (dollars)</Text>
 						<TextInput
+						editable={this.state.editable}
+						placeholder='NA'
 				        style={styles(this.state).quote_input}
 				        defaultValue={this.state.quote}
 				        onChangeText={(e) => this.setState({ quote: e})}
 				      	/>
-				      	<Text style={styles(this.state).headers}>Status</Text>
-						<SelectDropdown
+				      	{this.state.editable && <Text style={styles(this.state).headers}>Status</Text>}
+						{this.state.editable && <SelectDropdown
 							renderDropdownIcon={(isOpened) => {
 				              return (
 				                <FontAwesome
@@ -184,7 +201,7 @@ export default class EditData extends React.Component {
 
 								return item
 							}}
-						/>
+						/>}
 				       	<Text style={styles(this.state).headers}>Comments</Text>
 						<TextInput
 				        style={styles(this.state).comments_input}

@@ -8,7 +8,7 @@ import EmpData from './components/EmpData';
 import EditCustomer from './components/EditCustomer';
 import NewJob from './components/NewJob';
 import NewCust from './components/NewCustomer';
-
+import ResetPassword from './components/ResetPassword'
 
 
 const Stack = createNativeStackNavigator();
@@ -31,6 +31,7 @@ export default function App() {
 		   		<Stack.Screen name='Edit customer' component={EditCustomer}/>
 		   		<Stack.Screen name='New Job' component={NewJob}/>
 		   		<Stack.Screen name='New Customer' component={NewCust}/>
+		   		<Stack.Screen name='Reset Password' component={ResetPassword}/>
 		      </Stack.Navigator>
 		    </NavigationContainer>
   		);	

@@ -6,6 +6,23 @@ export function getWindowValues() {
 	return {width, height, rem}
 }
 
+export function isValidEmail(str, empty=null) {
+	var code, i, len;
+	if (str.length == 0 && empty != null){
+		return false;
+	}
+	for (i = 0, len = str.length; i < len; i++) {
+		code = str.charCodeAt(i);
+		if (!(code > 47 && code < 58) && 
+    		!(code > 64 && code < 91) && 
+    		!(code > 96 && code < 123) &&
+    		!(code == 46) &&
+    		!(code == 64)) { 
+  				return false;
+			}
+	}
+	return true;
+};
 
 export function isAlphaNumeric(str, empty=null) {
 	var code, i, len;
@@ -23,7 +40,7 @@ export function isAlphaNumeric(str, empty=null) {
 			}
 	}
 	return true;
-	};
+};
 
 export function isNumeric(str, empty=null) {
 	var code, i, len;
@@ -37,7 +54,7 @@ export function isNumeric(str, empty=null) {
 		}
 	}
 	return true;
-	};
+};
 	
 export function isMoney(str, empty=null) {
 	let dot = false;
@@ -56,7 +73,7 @@ export function isMoney(str, empty=null) {
 		}
 	}
 	return true;
-	};
+};
 	
 export function convertTime(jobtime) {
 	if (jobtime == 'NA') {

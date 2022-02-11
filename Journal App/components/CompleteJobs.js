@@ -8,12 +8,13 @@ var ip = null;
 var pass = null;
 var email = null;
 var navigation = null;
-
+var account = null;
 
 export const CompleteJobs = (props) => {
 	ip = props.state.ip
 	pass = props.state.pass
 	email = props.state.email
+	account = props.state.account
 	navigation = useNavigation();
 	return (makeList(props.state.displayComplete))
 }
@@ -25,7 +26,7 @@ const renderJob = ({ item }) => (
         	touchSoundDisabled={true}
         	style={styles.jobItem}
    			onPress={ 
-			() => navigation.navigate('Edit job', { server: ip, items: item, email: email, password: pass })}>
+			() => navigation.navigate('Edit job', { account: account, server: ip, items: item, email: email, password: pass })}>
          		<View style={{ flexDirection: "row"}}>
             	    <Text style={styles.job_header_desc}>{item.job_desc}</Text>
             	    <Text style={styles.job_header_status}>{item.job_status}</Text>

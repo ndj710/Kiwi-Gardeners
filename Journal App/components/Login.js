@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, StatusBar, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import * as Crypto from 'expo-crypto';
-import { isAlphaNumeric, getWindowValues } from '../numeric.js';
+import { isAlphaNumeric, getWindowValues, isValidEmail } from '../numeric.js';
 import { text } from './inputs';
 import * as SecureStore from 'expo-secure-store';
 
@@ -14,6 +14,7 @@ export default class Login extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			fpass: false,
 			password: '',
 			email: '',
 			signin: false,
@@ -45,11 +46,12 @@ export default class Login extends React.Component {
 	  		})
 	  		.then(val => {
 				if (val.pass == 'correct') {
+					let variables = {account: val.account, server: ip, id: val.id, email: this.state.email, pass: hashed_pw }
 					if (val.account == 'ADMIN') {
-						this.props.navigation.navigate('Data', {server: ip, email: this.state.email, pass: hashed_pw })
+						this.props.navigation.navigate('Data', variables)
 					}
 					if (val.account == 'EMP') {
-						this.props.navigation.navigate('Emp Data', {server: ip, email: this.state.email, pass: hashed_pw })
+						this.props.navigation.navigate('Emp Data', variables)
 					}
 					this.passInput.clear()
 					this.setState({ password: '', signin: false, signinbutton: 'SIGN IN'})
@@ -87,6 +89,32 @@ export default class Login extends React.Component {
     		source={require('..//assets/login.png')} 
     		style={{ maxHeight: height * 0.37, maxWidth: width}}
     		/>
+    	<Text style={{marginLeft: width * 0.7}}
+    		disabled={this.state.fpass}
+			onPress={async () => {
+				this.setState({fpass: true})
+				if (isValidEmail(this.state.email, false)) {
+					let payload = { email: this.state.email }
+					await axios
+				  		.post(ip + "resetpassword", payload)
+				  		.then(response => {
+				     		return response.data
+				  		})
+				  		.then(val => {
+							this.props.navigation.navigate('Reset Password', {server: ip, email: this.state.email, code: val})
+							this.setState({fpass: false})
+				  		})
+				  		.catch(error => {
+							this.setState({fpass: false})
+				     		console.log(error)
+				  		})			
+				} else {
+					this.setState({fpass: false})
+					alert('Enter a valid email')
+				}
+
+			}}>
+			Forgot password?</Text>
     	<View style={{flexDirection: 'row', flex: 0.1, marginTop: 80 * rem}}>
 		   	<TextInput
 	        	placeholder="Email"

@@ -12,21 +12,21 @@ export default class NewJob extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			open: false,
-			value: null,
-			items: [{id: 0, label: 'New Customer', value: 'NewCustomer'}],
-			id: null,
+			custOpen: false, empOpen: false,
+			custValue: null, empValue: [],
+			custItems: [{customer_id: 0, label: 'New Customer', value: 'NewCustomer'}], empItems : [],
+			cust_id: '', emp_ids: [],
 			
 			job_desc: '',
 			job_address: '',
 			hours: '',
 			minutes: '',
 			quote: '',
-			cust_id: '',
 
 
 			bcolours: ['black', 'black', 'black', 'black', 'black', 'black'],
 			customerData: this.props.route.params.cust_data,
+			empData: this.props.route.params.emp_data,
 			jobData: this.props.route.params.job_data,
 			pass: this.props.route.params.password,
 			email: this.props.route.params.email,
@@ -35,18 +35,18 @@ export default class NewJob extends React.Component {
 			newCust: false,
 			button: false
 		}
-		this.setValue = this.setValue.bind(this);
+		this.setCustValue = this.setCustValue.bind(this);
+		this.setEmpValue = this.setEmpValue.bind(this);
 	}
 
 	callBackend = async () => {
-		
+		console.log(this.state.emp_ids)
 		let checkform = [!isAlphaNumeric(this.state.job_desc, false), !isAlphaNumeric(this.state.job_address, false), !isNumeric(this.state.hours), !isNumeric(this.state.minutes), !isNumeric(this.state.quote)]
 		
 		let result = true
-		if (this.state.value != null) {
+		if (this.state.custValue != null) {
 			result = false
-			this.setState({cust_id: this.state.id})
-			let name = this.state.value
+			let name = this.state.custValue
 			if (name == 'NewCustomer'){
 				this.setState({newCust: true})
 			}
@@ -72,11 +72,10 @@ export default class NewJob extends React.Component {
 		
 		
 		if (this.state.bcolours.every((element) => {return(element == 'black')}) && this.state.newCust == false) {
-
 			this.setState({button:true})
 			let payload = { email: this.state.email, pass: this.state.pass, job_desc: this.state.job_desc, job_address: this.state.job_address,
 												est_time: est_time, quote: this.state.quote,
-											 	cust_id: this.state.cust_id}
+											 	cust_id: this.state.cust_id, empData: this.state.emp_ids }
 	
 			try {
 				var response = await axios.post(this.state.ip + "NewJob", payload)
@@ -90,7 +89,7 @@ export default class NewJob extends React.Component {
 			}
 		} else if (this.state.bcolours.every((element) => {return(element == 'black')}) && this.state.newCust == true) {
 				this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: {job_desc: this.state.job_desc, job_address: this.state.job_address, 
-				est_time, quote: this.state.quote}, cust_data: [], email: this.state.email, password: this.state.pass })
+				est_time, quote: this.state.quote}, empData: this.state.emp_ids, cust_data: [], email: this.state.email, password: this.state.pass })
 		} else {
 			alert('Invalid input(s)')
 		}
@@ -98,37 +97,36 @@ export default class NewJob extends React.Component {
 
 
 	componentDidMount() {
-
 		if (this.state.customerData.length != 0) {
-			this.state.customerData.forEach(element => this.state.items.push({id: element.id, label: element.full_name, value: element.full_name}))			
-		} else {
-			let payload = { pass: this.state.pass }
-			var search = 'SearchCustomer'					
-			axios
-		  		.post(this.state.ip + search, payload)
-		  		.then(response => {
-		     		return response.data
-		  		})
-		  		.then(val => { 
-					this.setState({ customerData: val });	
-			  		this.state.customerData.forEach(element => this.state.items.push({id: element.id, label: element.full_name, value: element.full_name}))		
-		  		})
-		  		.catch(error => {
-		     		console.log(error)
-		  		})
+			this.state.customerData.forEach(element => this.state.custItems.push({customer_id: element.id, label: element.full_name, value: element.full_name}))			
 		}
-
+		if (this.state.empData.length != 0) {
+			this.state.empData.forEach(element => this.state.empItems.push({emp_id: element.id, label: element.email, value: element.email}))		
+		}
 	}
-
-  	setValue(callback) {
+	
+  	setEmpValue(callback) {
     	this.setState(state => ({
-      		value: callback(state.value)
+      		empValue: callback(state.empValue)
+    	}));
+  	}
+  	
+	setEmpItems(callback) {
+    	this.setState(state => ({
+      		empItems: callback(state.empItems)
+    	}));
+  	}
+  	
+
+  	setCustValue(callback) {
+    	this.setState(state => ({
+      		custValue: callback(state.custValue)
     	}));
   	}
 	
- 	setItems(callback) {
+ 	setCustItems(callback) {
     	this.setState(state => ({
-      		items: callback(state.items)
+      		custItems: callback(state.custItems)
     	}));
   	}
 
@@ -136,11 +134,50 @@ export default class NewJob extends React.Component {
         	return (
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).innerContainer}>
-					
-					
-		      		  	<Text style={styles(this.state).headers}>Customer *</Text>
-	    
+		      		  	<Text style={styles(this.state).headers}>Employees</Text>
 					    <DropDownPicker
+					        multiple={true}
+					    	zIndex={3000}
+    						zIndexInverse={1000}
+					    	style={{
+								backgroundColor: 'white',
+								height: 40 * rem,
+							    borderWidth: 2 * rem,
+							    borderColor: 'black',
+							    marginBottom: 10 * rem
+							}}
+							textStyle={{
+								fontSize: 16 * rem	
+							}}
+					    	listMode="FLATLIST"
+					    	placeholder="Select employee(s)"
+					        open={this.state.empOpen}
+					        value={this.state.empValue}
+					        items={this.state.empItems} 
+					        itemKey="emp_id"
+					        showTickIcon={true}
+					        setOpen={() => {
+										if (this.state.empOpen) {
+											this.setState({empOpen: false})
+										} else {
+											this.setState({empOpen: true})
+										}
+									}}
+					        onSelectItem={(item) => {
+								this.setState({emp_ids: []})
+								let new_list = []
+								item.forEach(element => {
+									new_list.push(element.emp_id)
+								})
+								this.setState({emp_ids: new_list})
+							}}
+					        setValue={this.setEmpValue}
+					        setItems={this.setItems}
+					      />
+		      		  	<Text style={styles(this.state).headers}>Customer *</Text>
+					    <DropDownPicker
+					        zIndex={2000}
+    						zIndexInverse={2000}
 					    	style={{
 								backgroundColor: 'white',
 								height: 40 * rem,
@@ -158,29 +195,28 @@ export default class NewJob extends React.Component {
 					    	placeholder="Select a customer"
 					    	searchPlaceholder="Type customer name here"
 					      	searchable={true}
-					        open={this.state.open}
-					        value={this.state.value}
-					        items={this.state.items} 
-					        itemKey="id"
+					        open={this.state.custOpen}
+					        value={this.state.custValue}
+					        items={this.state.custItems} 
+					        itemKey="customer_id"
 					        showTickIcon={false}
 					        setOpen={() => {
-										if (this.state.open) {
-											this.setState({open: false})
+										if (this.state.custOpen) {
+											this.setState({custOpen: false})
 										} else {
-											this.setState({open: true})
+											this.setState({custOpen: true})
 										}
 									}}
-					        setValue={this.setValue}
-					        setItems={this.setItems}
+					        setValue={this.setCustValue}
+					        setItems={this.setCustItems}
 					        onSelectItem={(item) => {
-								this.setState({id: item.id})
+								this.setState({cust_id: item.customer_id})
 								if (item.value == 'NewCustomer') {
 									this.setState({confirmButton: 'Next'})
 								} else {
 									this.setState({confirmButton: 'Confirm'})					
 								}
 							}}
-					
 					      />
 						<Text style={styles(this.state).headers}>Job description *</Text>
 				 		<TextInput

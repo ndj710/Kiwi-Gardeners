@@ -3,8 +3,8 @@ import { StyleSheet, Text, TextInput, View, TouchableOpacity, ActivityIndicator 
 import axios from 'axios';
 import { isAlphaNumeric, convertTime, getWindowValues } from '../numeric.js';
 import Icon from 'react-native-vector-icons/Feather';
-import FontIcon from 'react-native-vector-icons/FontAwesome';
 import { CurrentJobs } from './CurrentJobs.js';
+import { CompleteJobs } from './CompleteJobs.js';
 
 const {height, rem, width} = getWindowValues()
 
@@ -12,11 +12,18 @@ export default class EmpData extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			account: this.props.route.params.account,
 			loading: true, reload: this.props.route.params.reload ?? false,
 			pass: this.props.route.params.pass, email: this.props.route.params.email,
 			ip: this.props.route.params.server,
-			displayCur: [], curjobData: [], currentPage: 'Current Jobs',
+			id: this.props.route.params.id,
+			displayList: null, searchbox: '',
+			curjobData: [], completejobData: [],
+			displayCur: [], displayCompelte: [],
+			curjob: true, completejob: false,
+			currentPage: 'Current Jobs', text: '', searchborder: '#ebecf4',
 			curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
+			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>,
 		}
 		this.timer = null;
 	}
@@ -43,7 +50,10 @@ export default class EmpData extends React.Component {
 	confirmSearch(val) {
 		if (isAlphaNumeric(val)) {
 			this.setState({searchbox: val, searchborder: '#ebecf4'})
-			this.setState({displayCur: this.searchData(this.state.curjobData)})
+			
+			this.setState({displayCur: this.searchData(this.state.curjobData)})	
+			this.setState({displayComplete: this.searchData(this.state.completejobData)})
+			
 			this.refreshList()
 					
 		} else {
@@ -54,11 +64,16 @@ export default class EmpData extends React.Component {
 	}
 	
 	refreshList() {
-		this.setState({ displayList: <CurrentJobs state={this.state} />})
+		if (this.state.curjob) {
+			this.setState({ displayList: <CurrentJobs state={this.state} />})					
+		}
+		if (this.state.completejob) {
+			this.setState({ displayList: <CompleteJobs state={this.state} />})					
+		}
 	}
 	
 	async getData() {
-		let payload = { email: this.state.email, pass: this.state.pass }
+		let payload = { id: this.state.id, email: this.state.email, pass: this.state.pass }
 		await axios
 	  		.post(this.state.ip + "SearchJob", payload)
 	  		.then(response => {
@@ -73,6 +88,41 @@ export default class EmpData extends React.Component {
 	  		.catch(error => {
 	     		console.log(error)
 	  		})
+		await axios
+	  		.post(this.state.ip + "SearchCompleteJobs", payload)
+	  		.then(response => {
+	     		return response.data
+	  		})
+	  		.then(val => {
+				val.forEach((element) => {
+					element['time'] = convertTime(element.est_time)
+				})
+				this.setState({ completejobData: val});	
+	  		})
+	  		.catch(error => {
+	     		console.log(error)
+	  		})
+			if (this.state.searchbox == '') {
+				this.setState({displayCur: this.state.curjobData, displayComplete: this.state.completejobData})
+				this.refreshList()
+			} else {
+				this.confirmSearch(this.state.searchbox)
+			}
+	}
+
+	
+	handleBottomMenu(button) {
+		if (button == 'curJob') {
+			this.setState({currentPage: 'Current Jobs', curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
+			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>,
+			curjob: true, completejob: false, displayList: <CurrentJobs state={this.state} />
+			})		
+		} else if (button == 'completejob') {
+			this.setState({currentPage: 'Complete Jobs', curJobIcon: <Icon name="tool" size={30 * rem} color="black"/>,
+			completeJobIcon: <Icon name="book" size={40 * rem} color="red"/>,
+			curjob: false, completejob: true, displayList: <CompleteJobs state={this.state} />
+			})
+		}
 	}
     
     changeText(val) {
@@ -109,6 +159,7 @@ export default class EmpData extends React.Component {
 			await this.getData()
 			this.setState({loading: false, reload: false})
 			this.props.route.params.reload = false
+
 		}
 	    if (prevState.text !== this.state.text) {
       		this.handleCheck();
@@ -133,13 +184,6 @@ export default class EmpData extends React.Component {
 			        placeholder="Filter search"
 			        onChangeText={(val) => this.changeText(val)}
       				/>
-					<TouchableOpacity 
-						style={styles(this.state).newItem}
-			        	onPress={this.state.newItem[2]}
-			        	activeOpacity={0.4}>
-			        	{this.state.newItem[0]}
-			        	<Text style={styles(this.state).newItemButtons}>{this.state.newItem[1]}</Text>
-			      	</TouchableOpacity>
 	            </View>
 				
 			 	<View style={styles(this.state).boxhold}>
@@ -162,18 +206,6 @@ export default class EmpData extends React.Component {
 			        	activeOpacity={0.4}>
 			        	{this.state.completeJobIcon}
 			        	<Text style={styles(this.state).bottomCompleteJobButton}>Complete Jobs</Text>
-			      	</TouchableOpacity>
-					<TouchableOpacity 
-						style={styles(this.state).bottomButton}
-						disabled={this.state.cust}
-			        	onPress={() => {
-										this.handleBottomMenu('cust')
-								}}
-			        	activeOpacity={0.4}>
-						<View>
-			        	{this.state.custIcon}
-			        	</View>
-			        	<Text style={styles(this.state).bottomCustomersButton}>Customers</Text>
 			      	</TouchableOpacity>
 		        </View>
 		 	</View>
@@ -227,17 +259,7 @@ const styles = (state) => StyleSheet.create({
 		borderColor: state.searchborder,
 		backgroundColor: 'white'
 	},
-	newItem: {
-		flexDirection: 'column', 
-		flex: 0.3, 
-		justifyContent: "center",
-		alignItems: "center", 
-	},
 	bottomButton:{
-		justifyContent: "center",
-		alignItems: "center", 
-	},
-	newItemButtons: {
 		justifyContent: "center",
 		alignItems: "center", 
 	},
@@ -251,10 +273,4 @@ const styles = (state) => StyleSheet.create({
 		fontSize: 14 * rem,
 		paddingTop: 10 * rem
 	},
-	bottomCustomersButton: {
-		color: state.custIcon['props'].color,
-		fontSize: 14 * rem,
-		paddingTop: 10 * rem
-	}
-
 });
