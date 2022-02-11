@@ -12,6 +12,7 @@ export default class EmpData extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			onJobData: [],
 			account: this.props.route.params.account,
 			loading: true, reload: this.props.route.params.reload ?? false,
 			pass: this.props.route.params.pass, email: this.props.route.params.email,
@@ -74,6 +75,17 @@ export default class EmpData extends React.Component {
 	
 	async getData() {
 		let payload = { id: this.state.id, email: this.state.email, pass: this.state.pass }
+		await axios
+	  		.post(this.state.ip + "SearchOnJob", payload)
+	  		.then(response => {
+	     		return response.data
+	  		})
+	  		.then(val => {
+				this.setState({ onJobData: val});
+	  		})
+	  		.catch(error => {
+	     		console.log(error)
+	  		})
 		await axios
 	  		.post(this.state.ip + "SearchJob", payload)
 	  		.then(response => {

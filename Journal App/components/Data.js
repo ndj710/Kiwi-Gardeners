@@ -4,9 +4,11 @@ import axios from 'axios';
 import { isAlphaNumeric, convertTime, getWindowValues } from '../numeric.js';
 import Icon from 'react-native-vector-icons/Feather';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
+import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CurrentJobs } from './CurrentJobs.js';
 import { CompleteJobs } from './CompleteJobs.js';
 import { Customers } from './Customers.js';
+import { Employees } from './Employees.js';
 
 const {height, rem, width} = getWindowValues()
 
@@ -19,9 +21,9 @@ export default class Data extends React.Component {
 			pass: this.props.route.params.pass, email: this.props.route.params.email,
 			ip: this.props.route.params.server,
 			displayList: null, searchbox: '',
-			curjobData: [], completejobData: [], custData: [], empData: [],
-			displayCur: [], displayCompelte: [], displayCust: [],
-			curjob: true, completejob: false, cust: false,
+			curjobData: [], completejobData: [], custData: [], empData: [], onJobData: [],
+			displayCur: [], displayCompelte: [], displayCust: [], displayEmp: [],
+			curjob: true, completejob: false, cust: false, emp: false,
 			currentPage: 'Current Jobs', text: '', searchborder: '#ebecf4',
 			newItem: [<Icon name="user-plus" size={40 * rem} color="black"/> ,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, emp_data: this.state.empData, cust_data: this.state.custData, email: this.state.email, password: this.state.pass })],
 			curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
@@ -29,6 +31,8 @@ export default class Data extends React.Component {
 			custIcon: <Icon name="users" size={30 * rem} color="black"/>,
 			newUserIcon: <Icon name="user-plus" size={40 * rem} color="black"/>,
 			newJobIcon: <FontIcon name="sticky-note-o" size={40 * rem} color="black"/>,
+			newEmpIcon:<MatIcon name='head-plus-outline' size={40 * rem} color='black'/>,
+			empIcon: <MatIcon name="head-outline" size={30 * rem} color="black"/>
 		}
 		this.timer = null;
 	}
@@ -59,6 +63,7 @@ export default class Data extends React.Component {
 			this.setState({displayCur: this.searchData(this.state.curjobData)})	
 			this.setState({displayComplete: this.searchData(this.state.completejobData)})
 			this.setState({displayCust: this.searchData(this.state.custData)})
+			this.setState({displayEmp: this.searchData(this.state.empData)})
 			
 			this.refreshList()
 					
@@ -72,12 +77,12 @@ export default class Data extends React.Component {
 	refreshList() {
 		if (this.state.curjob) {
 			this.setState({ displayList: <CurrentJobs state={this.state} />})					
-		}
-		if (this.state.completejob) {
+		} else if (this.state.completejob) {
 			this.setState({ displayList: <CompleteJobs state={this.state} />})					
-		}
-		if (this.state.cust) {
+		} else if (this.state.cust) {
 			this.setState({ displayList: <Customers state={this.state} />})					
+		} else if (this.state.emp) {
+			this.setState({ displayList: <Employees state={this.state} />})					
 		}
 	}
 	
@@ -90,6 +95,17 @@ export default class Data extends React.Component {
 	  		})
 	  		.then(val => {
 				this.setState({ empData: val});
+	  		})
+	  		.catch(error => {
+	     		console.log(error)
+	  		})
+		await axios
+	  		.post(this.state.ip + "SearchOnJob", payload)
+	  		.then(response => {
+	     		return response.data
+	  		})
+	  		.then(val => {
+				this.setState({ onJobData: val});
 	  		})
 	  		.catch(error => {
 	     		console.log(error)
@@ -134,7 +150,7 @@ export default class Data extends React.Component {
 	     		console.log(error)
 	  		})
 			if (this.state.searchbox == '') {
-				this.setState({displayCur: this.state.curjobData, displayComplete: this.state.completejobData, displayCust: this.state.custData})
+				this.setState({displayCur: this.state.curjobData, displayComplete: this.state.completejobData, displayCust: this.state.custData, displayEmp: this.state.empData})
 				this.refreshList()
 			} else {
 				this.confirmSearch(this.state.searchbox)
@@ -146,22 +162,33 @@ export default class Data extends React.Component {
 		if (button == 'curJob') {
 			this.setState({currentPage: 'Current Jobs', curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
 			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>, custIcon: <Icon name="users" size={30 * rem} color="black"/>,
-			curjob: true, cust: false, completejob: false, displayList: <CurrentJobs state={this.state} />,
+			emp: false, curjob: true, cust: false, completejob: false, displayList: <CurrentJobs state={this.state} />,
+			empIcon: <MatIcon name="head-outline" size={30 * rem} color="black"/>,
 			newItem: [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], emp_data: this.state.empData, cust_data: this.state.custData, email: this.state.email, password: this.state.pass })]
 			})		
 		} else if (button == 'completejob') {
 			this.setState({currentPage: 'Complete Jobs', curJobIcon: <Icon name="tool" size={30 * rem} color="black"/>,
 			completeJobIcon: <Icon name="book" size={40 * rem} color="red"/>, custIcon: <Icon name="users" size={30 * rem} color="black"/>,
-			curjob: false, cust: false, completejob: true, displayList: <CompleteJobs state={this.state} />,
+			empIcon: <MatIcon name="head-outline" size={30 * rem} color="black"/>,
+			emp: false, curjob: false, cust: false, completejob: true, displayList: <CompleteJobs state={this.state} />,
 			newItem: [this.state.newJobIcon,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, job_data: [], emp_data: this.state.empData, cust_data: this.state.custData, email: this.state.email, password: this.state.pass })]
 			})			
 		} else if (button == 'cust') {
 			this.setState({currentPage: 'Customers', curJobIcon: <Icon name="tool" size={30 * rem} color="black"/>,
 			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>, custIcon: <Icon name="users" size={40 * rem} color="red"/>,
-			curjob: false, cust: true, completejob: false, displayList: <Customers state={this.state} />,
+			empIcon: <MatIcon name="head-outline" size={30 * rem} color="black"/>,
+			emp: false, curjob: false, cust: true, completejob: false, displayList: <Customers state={this.state} />,
 			newItem: [this.state.newUserIcon,'New Customer', () => this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: [], cust_data: [], email: this.state.email, password: this.state.pass })]
 			})
+		} else if (button == 'emp') {
+			this.setState({currentPage: 'Employees', curJobIcon: <Icon name="tool" size={30 * rem} color="black"/>,
+			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>, custIcon: <Icon name="users" size={30 * rem} color="black"/>,
+			empIcon: <MatIcon name="head-outline" size={40 * rem} color="red"/>,
+			emp: true, curjob: false, cust: false, completejob: false, displayList: <Employees state={this.state} />,
+			newItem: [this.state.newEmpIcon,'New Employee', () => this.props.navigation.navigate('New Employee', { server: this.state.ip, email: this.state.email, password: this.state.pass })]
+			})
 		}
+		
 	}
     
     changeText(val) {
@@ -265,6 +292,18 @@ export default class Data extends React.Component {
 			        	</View>
 			        	<Text style={styles(this.state).bottomCustomersButton}>Customers</Text>
 			      	</TouchableOpacity>
+					<TouchableOpacity 
+						style={styles(this.state).bottomButton}
+						disabled={this.state.emp}
+			        	onPress={() => {
+										this.handleBottomMenu('emp')
+								}}
+			        	activeOpacity={0.4}>
+						<View>
+			        	{this.state.empIcon}
+			        	</View>
+			        	<Text style={styles(this.state).bottomEmpButton}>Employees</Text>
+			      	</TouchableOpacity>
 		        </View>
 		 	</View>
  		);
@@ -344,6 +383,11 @@ const styles = (state) => StyleSheet.create({
 	},
 	bottomCustomersButton: {
 		color: state.custIcon['props'].color,
+		fontSize: 14 * rem,
+		paddingTop: 10 * rem
+	},
+	bottomEmpButton: {
+		color: state.empIcon['props'].color,
 		fontSize: 14 * rem,
 		paddingTop: 10 * rem
 	}

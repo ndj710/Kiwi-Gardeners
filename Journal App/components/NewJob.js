@@ -40,7 +40,6 @@ export default class NewJob extends React.Component {
 	}
 
 	callBackend = async () => {
-		console.log(this.state.emp_ids)
 		let checkform = [!isAlphaNumeric(this.state.job_desc, false), !isAlphaNumeric(this.state.job_address, false), !isNumeric(this.state.hours), !isNumeric(this.state.minutes), !isNumeric(this.state.quote)]
 		
 		let result = true
@@ -101,7 +100,7 @@ export default class NewJob extends React.Component {
 			this.state.customerData.forEach(element => this.state.custItems.push({customer_id: element.id, label: element.full_name, value: element.full_name}))			
 		}
 		if (this.state.empData.length != 0) {
-			this.state.empData.forEach(element => this.state.empItems.push({emp_id: element.id, label: element.email, value: element.email}))		
+			this.state.empData.forEach(element => this.state.empItems.push({emp_id: element.id, label: element.full_name, value: element.full_name}))	
 		}
 	}
 	

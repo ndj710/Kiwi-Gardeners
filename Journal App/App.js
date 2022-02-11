@@ -6,8 +6,10 @@ import EditJobData from './components/EditJobData';
 import Data from './components/Data';
 import EmpData from './components/EmpData';
 import EditCustomer from './components/EditCustomer';
+import EditEmp from './components/EditEmp';
 import NewJob from './components/NewJob';
 import NewCust from './components/NewCustomer';
+import NewEmp from './components/NewEmp';
 import ResetPassword from './components/ResetPassword'
 
 
@@ -29,8 +31,10 @@ export default function App() {
 				}}/>
 		       	<Stack.Screen name='Edit job' component={EditJobData}/>
 		   		<Stack.Screen name='Edit customer' component={EditCustomer}/>
+		   		<Stack.Screen name='Edit Employee' component={EditEmp}/>
 		   		<Stack.Screen name='New Job' component={NewJob}/>
 		   		<Stack.Screen name='New Customer' component={NewCust}/>
+		   		<Stack.Screen name='New Employee' component={NewEmp}/>
 		   		<Stack.Screen name='Reset Password' component={ResetPassword}/>
 		      </Stack.Navigator>
 		    </NavigationContainer>

@@ -9,25 +9,39 @@ var pass = null;
 var email = null;
 var navigation = null;
 var account = null;
-
+var emp_data = null;
+var on_job = null;
 
 export const CurrentJobs = (props) => {
 	ip = props.state.ip
 	pass = props.state.pass
 	email = props.state.email
 	account = props.state.account
+	emp_data = props.state.empData
+	on_job = props.state.onJobData
 	navigation = useNavigation();
 	return (makeList(props.state.displayCur))
 }
 
 
-const renderJob = ({ item }) => (
+const renderJob = ({ item }) => {
+	let employees = []
+	on_job.forEach(element => {
+		if (element.job_id == item.id) {
+			if (employees.length != 0) {
+			employees.push(', ' + element.full_name)
+			} else {
+				employees.push(element.full_name)
+			}
+		}
+	})
+	return(
         <TouchableOpacity 
         	key={item.id}
         	touchSoundDisabled={true}
         	style={styles.jobItem}
    			onPress={ 
-			() => navigation.navigate('Edit job', { account: account, server: ip, items: item, email: email, password: pass })}>
+			() => navigation.navigate('Edit job', { employees: employees, emp_data: emp_data, account: account, server: ip, items: item, email: email, password: pass })}>
          		<View style={{ flexDirection: "row"}}>
             	    <Text style={styles.job_header_desc}>{item.job_desc}</Text>
             	    <Text style={styles.job_header_status}>{item.job_status}</Text>
@@ -54,8 +68,10 @@ const renderJob = ({ item }) => (
             	    	<Text style={styles.comments}>{item.comments}</Text>
 					</View>
                 </View>
+                {employees.length != 0 && <Text>Employees: {employees}</Text>}
         </TouchableOpacity>
-);
+)
+}
 
 
 

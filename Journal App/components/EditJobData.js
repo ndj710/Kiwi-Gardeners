@@ -4,6 +4,7 @@ import axios from 'axios';
 import { isAlphaNumeric, isNumeric, convertTime, isMoney, getWindowValues } from '../numeric.js';
 import SelectDropdown from 'react-native-select-dropdown'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 
 
@@ -14,7 +15,8 @@ export default class EditData extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			
+			employees: this.props.route.params.employees,
+			empOpen: false, empValue: [], empItems: [], emp_ids: [], empData: this.props.route.params.emp_data,
 			id: this.props.route.params.items.id,
 			job_desc: this.props.route.params.items.job_desc,
 			full_name: this.props.route.params.items.full_name,
@@ -35,6 +37,7 @@ export default class EditData extends React.Component {
 			button: false, editable: false
 
 		}
+		this.setEmpValue = this.setEmpValue.bind(this);
 	}
 
 	callBackend = async () => {
@@ -61,7 +64,7 @@ export default class EditData extends React.Component {
 			let payload = { email: this.state.email, pass: this.state.pass, job_desc: this.state.job_desc, full_name: this.state.full_name,
 												job_address: this.state.job_address, ph_num: this.state.ph_num,
 												est_time: est_time, quote: this.state.quote, status: this.state.status, 
-												comments: this.state.comments, id: this.state.id }
+												comments: this.state.comments, id: this.state.id, empData: this.state.emp_ids }
 			try {
 				var response = await axios.post(this.state.ip + "EditJob", payload)
 				if (response.data == 'Done') {
@@ -109,7 +112,7 @@ export default class EditData extends React.Component {
       ]
     );
 	
-	componentDidMount() {
+	async componentDidMount() {
 
 		if(this.state.hours == 'NA') {
 			this.setState({hours: '', minutes: ''})
@@ -119,9 +122,36 @@ export default class EditData extends React.Component {
 		}
 		if (this.state.account == 'ADMIN') {
 			this.setState({editable: true})
+			if (this.state.empData.length != 0) {
+				let populate_emp_id = []
+				let result = await this.state.employees.map(i => i.replace(', ', ''));
+				this.state.empData.forEach(element => {
+					result.forEach(name => {
+						if (element.full_name == name) {
+							populate_emp_id.push(element.id)
+						}
+					})
+					this.state.empItems.push({emp_id: element.id, label: element.full_name, value: element.full_name})})
+				
+				this.setState({employees: result, empValue: result, emp_ids: populate_emp_id})
+			}
 		}
+
 	}
 	
+  	setEmpValue(callback) {
+    	this.setState(state => ({
+      		empValue: callback(state.empValue)
+    	}));
+  	}
+  	
+	setEmpItems(callback) {
+    	this.setState(state => ({
+      		empItems: callback(state.empItems)
+    	}));
+  	}
+	
+
   	render() {
         	return (
 				<View style={styles(this.state).container}>
@@ -134,6 +164,46 @@ export default class EditData extends React.Component {
 			      	</TouchableOpacity>}
 			      	</View>
 					<View style={styles(this.state).innerView}>
+		      		  	{this.state.editable && <Text style={styles(this.state).headers}>Employees</Text> &&
+					    <DropDownPicker
+					        multiple={true}
+					    	zIndex={3000}
+    						zIndexInverse={1000}
+					    	style={{
+								backgroundColor: 'white',
+								height: 40 * rem,
+							    borderWidth: 2 * rem,
+							    borderColor: 'black',
+							    marginBottom: 10 * rem
+							}}
+							textStyle={{
+								fontSize: 16 * rem	
+							}}
+					    	listMode="FLATLIST"
+					    	placeholder="Select employee(s)"
+					        open={this.state.empOpen}
+					        value={this.state.empValue}
+					        items={this.state.empItems} 
+					        itemKey="emp_id"
+					        showTickIcon={true}
+					        setOpen={() => {
+										if (this.state.empOpen) {
+											this.setState({empOpen: false})
+										} else {
+											this.setState({empOpen: true})
+										}
+									}}
+					        onSelectItem={(item) => {
+								this.setState({emp_ids: []})
+								let new_list = []
+								item.forEach(element => {
+									new_list.push(element.emp_id)
+								})
+								this.setState({emp_ids: new_list})
+							}}
+					        setValue={this.setEmpValue}
+					        setItems={this.setItems}
+					      />}
 						<Text style={styles(this.state).headers}>Job description *</Text>
 				 		<TextInput
 				 		editable={this.state.editable}

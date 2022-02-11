@@ -144,6 +144,7 @@ app.post("/EditJob", async (req, res) => {
 		if (quote.length == 0) {
 			quote = 'null'
 		}
+		let emps = req.body.empData
 		let check = await checkpw(req.body.email, req.body.pass);
 		if (check.pass == 'correct') {
 			if (check.account == 'ADMIN') {
@@ -153,6 +154,15 @@ app.post("/EditJob", async (req, res) => {
 		
 				const query = util.promisify(connection.query).bind(connection);
 				let result = await query(q1);
+				let job_id = req.body.id
+				if (emps.length != 0) {
+					let delemps = await query('DELETE FROM on_job WHERE job_id=' + job_id);
+					emps.forEach(async element => {
+						let addemp = await query('INSERT INTO on_job (job_id, user_id) VALUES (' + job_id + ',' + element + ')');
+					})
+				} else {
+					let delemps = await query('DELETE FROM on_job WHERE job_id=' + job_id);
+				}
 			} else if (check.account == 'EMP') {
 				let q1 = 'UPDATE jobs SET comments="' + req.body.comments + '" WHERE id=' + req.body.id; 
 				const query = util.promisify(connection.query).bind(connection);
@@ -174,6 +184,23 @@ app.post("/EditCust", async (req, res) => {
 		let check = await checkpw(req.body.email, req.body.pass);
 		if (check.pass == 'correct' && check.account == 'ADMIN') {
 			let q1 = 'UPDATE customers SET full_name="' + req.body.full_name + '", address="' + req.body.address + '", ph_num="' + req.body.ph_num + '" WHERE id=' + req.body.id; 
+			const query = util.promisify(connection.query).bind(connection);
+			let result = await query(q1);
+			res.send('Done')
+		} else {
+			res.send('Something broke')
+		}
+	} catch (error) {
+		console.log(error)
+	}	
+})
+
+app.post("/EditEmp", async (req, res) => {
+	console.log('broke at editemp')
+	try {
+		let check = await checkpw(req.body.email, req.body.pass);
+		if (check.pass == 'correct' && check.account == 'ADMIN') {
+			let q1 = 'UPDATE users SET full_name="' + req.body.full_name + '", username="' + req.body.emp_email + '" WHERE id=' + req.body.id; 
 			const query = util.promisify(connection.query).bind(connection);
 			let result = await query(q1);
 			res.send('Done')
@@ -211,6 +238,28 @@ app.post("/DeleteCust", async (req, res) => {
 			try {
 			let q1 = 'DELETE FROM customers WHERE id=' + req.body.id; 
 			const query = util.promisify(connection.query).bind(connection);
+			let result = await query(q1);
+			res.send('Done')
+			} catch {
+				res.send('Cannot delete')
+			}
+		} else {
+			res.send('Something broke')
+		}
+	} catch (error) {
+		console.log(error)
+	}			
+})
+
+app.post("/DeleteEmp", async (req, res) => {
+	console.log('broke at deleteemp')
+	try {
+		let check = await checkpw(req.body.email, req.body.pass);
+		if (check.pass == 'correct' && check.account == 'ADMIN') {
+			try {
+			let q1 = 'DELETE FROM users WHERE id=' + req.body.id; 
+			const query = util.promisify(connection.query).bind(connection);
+			let delemps = await query('DELETE FROM on_job WHERE user_id=' + req.body.id);
 			let result = await query(q1);
 			res.send('Done')
 			} catch {
@@ -264,12 +313,27 @@ app.post("/SearchCustomer", async (req, res) => {
 	}
 })
 
+app.post("/SearchOnJob", async (req, res) => {
+	console.log('broke at search on job')
+	try {
+		let check = await checkpw(req.body.email, req.body.pass);
+		if (check.pass == 'correct') {
+			let q = 'SELECT job_id, full_name FROM on_job JOIN users ON users.id = on_job.user_id ORDER BY full_name';
+			const query = util.promisify(connection.query).bind(connection);
+			let result = await query(q);
+			res.send(result);
+		}
+	} catch (error) {
+		console.log(error)
+	}
+})
+
 app.post("/SearchEmp", async (req, res) => {
 	console.log('broke at SearchEmp')
 	try {
 		let check = await checkpw(req.body.email, req.body.pass);
 		if (check.pass == 'correct' && check.account == 'ADMIN') {
-			let q = 'SELECT id, username AS email FROM users WHERE account_type="EMP" ORDER BY id';
+			let q = 'SELECT id, full_name, username AS email FROM users WHERE account_type="EMP" ORDER BY id';
 			const query = util.promisify(connection.query).bind(connection);
 			let result = await query(q);
 			res.send(result);
@@ -360,3 +424,22 @@ app.post("/NewCust", async (req, res) => {
 		console.log(error)
 	}
 })
+
+app.post("/NewEmp", async (req, res) => {
+	console.log('broke at new emp')
+	try {
+		let check = await checkpw(req.body.email, req.body.pass);
+		if (check.pass == 'correct' && check.account == 'ADMIN') {
+			let q = 'INSERT INTO users (full_name, username) ' +
+					'VALUES ("' + req.body.name + '","' + req.body.emp_email + '");';
+			const query = util.promisify(connection.query).bind(connection);
+			let result = await query(q);
+			res.send('Done')
+		} else {
+			res.send('Something broke')
+		}
+	} catch (error) {
+		console.log(error)
+	}
+})
+

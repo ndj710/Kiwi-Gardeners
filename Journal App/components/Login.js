@@ -105,6 +105,7 @@ export default class Login extends React.Component {
 							this.setState({fpass: false})
 				  		})
 				  		.catch(error => {
+							alert('Invalid email or network error')
 							this.setState({fpass: false})
 				     		console.log(error)
 				  		})			
