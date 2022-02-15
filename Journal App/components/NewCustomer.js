@@ -50,7 +50,7 @@ export default class NewCustomer extends React.Component {
 					let cust_id = Object.values(response.data)[0].id
 					let payload = { email: this.state.email, pass: this.state.pass, job_desc: this.state.jobData.job_desc, job_address: this.state.jobData.job_address,
 														est_time: this.state.jobData.est_time, quote: this.state.jobData.quote,
-													 	cust_id: cust_id, empData: this.state.emp_data}
+													 	cust_id: cust_id, empData: this.state.emp_data, date: new Date(this.state.jobData.date)}
 
 					var response = await axios.post(this.state.ip + "NewJob", payload)
 					this.props.navigation.navigate( 'Data', {reload: true, server: this.state.ip, email: this.state.email, pass: this.state.pass});

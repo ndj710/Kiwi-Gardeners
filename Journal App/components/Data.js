@@ -25,7 +25,7 @@ export default class Data extends React.Component {
 			displayCur: [], displayCompelte: [], displayCust: [], displayEmp: [],
 			curjob: true, completejob: false, cust: false, emp: false,
 			currentPage: 'Current Jobs', text: '', searchborder: '#ebecf4',
-			newItem: [<Icon name="user-plus" size={40 * rem} color="black"/> ,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, emp_data: this.state.empData, cust_data: this.state.custData, email: this.state.email, password: this.state.pass })],
+			newItem: [<FontIcon name="sticky-note-o" size={40 * rem} color="black"/>,'New Job', () => this.props.navigation.navigate('New Job', { server: this.state.ip, emp_data: this.state.empData, cust_data: this.state.custData, email: this.state.email, password: this.state.pass })],
 			curJobIcon: <Icon name="tool" size={40 * rem} color="red"/>,
 			completeJobIcon: <Icon name="book" size={30 * rem} color="black"/>,
 			custIcon: <Icon name="users" size={30 * rem} color="black"/>,

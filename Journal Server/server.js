@@ -150,7 +150,7 @@ app.post("/EditJob", async (req, res) => {
 			if (check.account == 'ADMIN') {
 				let q1 = 'UPDATE jobs SET job_desc="' + req.body.job_desc
 						+ '", job_address="' + req.body.job_address + '", est_time=' + req.body.est_time 
-						+ ', quote=' + quote + ', job_status="' + req.body.status + '", comments="' + req.body.comments + '" WHERE id=' + req.body.id; 
+						+ ', quote=' + quote + ', job_status="' + req.body.status + '", date_job="' + req.body.date + '", comments="' + req.body.comments + '" WHERE id=' + req.body.id; 
 		
 				const query = util.promisify(connection.query).bind(connection);
 				let result = await query(q1);
@@ -278,17 +278,17 @@ app.post("/SearchJob", async (req, res) => {
 	try {
 		let check = await checkpw(req.body.email, req.body.pass);
 		if (check.pass == 'correct' && check.account == 'ADMIN') {
-			let q = 'SELECT jobs.id AS id, full_name, ph_num, address AS cust_address, job_desc, job_address, comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id WHERE job_status = "Ongoing"'
-			+ ' ORDER BY created_at DESC';
+			let q = 'SELECT jobs.id AS id, full_name, ph_num, address AS cust_address, job_desc, job_address, date_job AS date, comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id WHERE job_status = "Ongoing"'
+			+ ' ORDER BY date_job';
 			const query = util.promisify(connection.query).bind(connection);
 			let result = await query(q);
 			res.send(result);
 		} else if (check.pass == 'correct' && check.account == 'EMP') {
-			let q = 'SELECT jobs.id AS id, full_name, ph_num, address AS cust_address, job_desc, job_address,' +
+			let q = 'SELECT jobs.id AS id, full_name, ph_num, address AS cust_address, date_job AS date, job_desc, job_address,' +
 			'comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs ' +
 			'LEFT JOIN customers ON jobs.cust_id = customers.id JOIN on_job ON on_job.job_id = jobs.id' +
 			' WHERE on_job.user_id = ' + req.body.id + ' AND job_status = "Ongoing"'
-			+ ' ORDER BY created_at DESC';
+			+ ' ORDER BY date_job';
 			const query = util.promisify(connection.query).bind(connection);
 			let result = await query(q);
 			res.send(result);
@@ -348,17 +348,17 @@ app.post("/SearchCompleteJobs", async (req, res) => {
 	try {
 		let check = await checkpw(req.body.email, req.body.pass);
 		if (check.pass == 'correct' && check.account == 'ADMIN') {
-			let q = 'SELECT jobs.id AS id, full_name, ph_num, address AS cust_address, job_desc, job_address, comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id WHERE job_status = "Complete"'
-			+ ' ORDER BY created_at DESC';
+			let q = 'SELECT jobs.id AS id, full_name, ph_num, address AS cust_address, job_desc, job_address, comments, date_job AS date, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id WHERE job_status = "Complete"'
+			+ ' ORDER BY date_job';
 			const query = util.promisify(connection.query).bind(connection);
 			let result = await query(q);
 			res.send(result);
 		} else if (check.pass == 'correct' && check.account == 'EMP') {
-			let q = 'SELECT jobs.id AS id, full_name, ph_num, address AS cust_address, job_desc, job_address,' +
+			let q = 'SELECT jobs.id AS id, full_name, ph_num, address AS cust_address, job_desc, date_job AS date, job_address,' +
 			'comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs ' +
 			'LEFT JOIN customers ON jobs.cust_id = customers.id JOIN on_job ON on_job.job_id = jobs.id' +
 			' WHERE on_job.user_id = ' + req.body.id + ' AND job_status = "Complete"'
-			+ ' ORDER BY created_at DESC';
+			+ ' ORDER BY date_job';
 			const query = util.promisify(connection.query).bind(connection);
 			let result = await query(q);
 			res.send(result);
@@ -380,9 +380,9 @@ app.post("/NewJob", async (req, res) => {
 		let emps = req.body.empData
 		let check = await checkpw(req.body.email, req.body.pass);
 		if (check.pass == 'correct' && check.account == 'ADMIN') {
-			let q = 'INSERT INTO jobs (job_desc, job_address, est_time, quote, cust_id) ' +
+			let q = 'INSERT INTO jobs (job_desc, job_address, est_time, quote, date_job, cust_id) ' +
 					'VALUES ("' + req.body.job_desc + '","' + req.body.job_address + '",' + 
-					est_time + ',' + quote + ',' + req.body.cust_id + ');';
+					est_time + ',' + quote + ',"' + req.body.date + '", ' +req.body.cust_id + ');';
 			const query = util.promisify(connection.query).bind(connection);
 			let result = await query(q);
 			if (emps.length != 0) {

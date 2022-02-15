@@ -1,29 +1,26 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
 import axios from 'axios';
-import { isAlphaNumeric, isNumeric, getWindowValues } from '../numeric.js';
+import { isAlphaNumeric, isNumeric, getWindowValues, setDay } from '../numeric.js';
 import DropDownPicker from 'react-native-dropdown-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const {height, rem, width} = getWindowValues()
-
-
 
 export default class NewJob extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			show: false, mode: 'date', date: null, display_date: null,
 			custOpen: false, empOpen: false,
 			custValue: null, empValue: [],
 			custItems: [{customer_id: 0, label: 'New Customer', value: 'NewCustomer'}], empItems : [],
 			cust_id: '', emp_ids: [],
-			
 			job_desc: '',
 			job_address: '',
 			hours: '',
 			minutes: '',
 			quote: '',
-
-
 			bcolours: ['black', 'black', 'black', 'black', 'black', 'black'],
 			customerData: this.props.route.params.cust_data,
 			empData: this.props.route.params.emp_data,
@@ -69,12 +66,11 @@ export default class NewJob extends React.Component {
 			est_time = null
 		}
 		
-		
 		if (this.state.bcolours.every((element) => {return(element == 'black')}) && this.state.newCust == false) {
 			this.setState({button:true})
 			let payload = { email: this.state.email, pass: this.state.pass, job_desc: this.state.job_desc, job_address: this.state.job_address,
 												est_time: est_time, quote: this.state.quote,
-											 	cust_id: this.state.cust_id, empData: this.state.emp_ids }
+											 	cust_id: this.state.cust_id, empData: this.state.emp_ids, date: this.state.date }
 	
 			try {
 				var response = await axios.post(this.state.ip + "NewJob", payload)
@@ -88,21 +84,23 @@ export default class NewJob extends React.Component {
 			}
 		} else if (this.state.bcolours.every((element) => {return(element == 'black')}) && this.state.newCust == true) {
 				this.props.navigation.navigate('New Customer', { server: this.state.ip, job_data: {job_desc: this.state.job_desc, job_address: this.state.job_address, 
-				est_time, quote: this.state.quote}, empData: this.state.emp_ids, cust_data: [], email: this.state.email, password: this.state.pass })
+				est_time, quote: this.state.quote, date: this.state.date.toString()}, empData: this.state.emp_ids, cust_data: [], email: this.state.email, password: this.state.pass })
 		} else {
 			alert('Invalid input(s)')
 		}
 	};
 
-
 	componentDidMount() {
 		if (this.state.customerData.length != 0) {
-			this.state.customerData.forEach(element => this.state.custItems.push({customer_id: element.id, label: element.full_name, value: element.full_name}))			
+			this.state.customerData.forEach(element => this.state.custItems.push({customer_id: element.id, label: element.full_name, value: element.full_name, address: element.address}))			
 		}
 		if (this.state.empData.length != 0) {
 			this.state.empData.forEach(element => this.state.empItems.push({emp_id: element.id, label: element.full_name, value: element.full_name}))	
 		}
+		let date_info = setDay()
+		this.setState({date: date_info.today, display_date: date_info.date})
 	}
+
 	
   	setEmpValue(callback) {
     	this.setState(state => ({
@@ -116,7 +114,6 @@ export default class NewJob extends React.Component {
     	}));
   	}
   	
-
   	setCustValue(callback) {
     	this.setState(state => ({
       		custValue: callback(state.custValue)
@@ -128,11 +125,43 @@ export default class NewJob extends React.Component {
       		custItems: callback(state.custItems)
     	}));
   	}
-
+  	
+	showDatepicker = () => {
+	    this.setState({show: true, mode: 'date'});
+  	}; 
+  	
+	onChange = (event, selectedDate) => {
+		this.setState({show: false})
+		this.dateInput.blur()
+	    const currentDate = selectedDate || this.state.date;
+		let date_info = setDay(currentDate)
+		this.setState({date: date_info.today, display_date: date_info.date})
+  	};
+  	
   	render() {
         	return (
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).innerContainer}>
+		      		  	<Text style={styles(this.state).headers}>Date</Text>
+				 		<TextInput 
+				 			editable={!this.state.show}
+				 			ref={input => { this.dateInput = input }}
+				 			defaultValue={this.state.display_date}
+					 		onFocus={this.showDatepicker}
+					 		onBlur={() => {
+								this.setState({show: false})
+							}}
+					        style={styles(this.state).job_input}
+				      	/>
+					    {this.state.show && (
+				        	<DateTimePicker
+					          testID="dateTimePicker"
+					          value={this.state.date}
+					          mode={this.state.mode}
+					          display="default"
+					          onChange={this.onChange}
+				        	/>
+				      	)}
 		      		  	<Text style={styles(this.state).headers}>Employees</Text>
 					    <DropDownPicker
 					        multiple={true}
@@ -209,7 +238,7 @@ export default class NewJob extends React.Component {
 					        setValue={this.setCustValue}
 					        setItems={this.setCustItems}
 					        onSelectItem={(item) => {
-								this.setState({cust_id: item.customer_id})
+								this.setState({cust_id: item.customer_id, job_address: item.address})
 								if (item.value == 'NewCustomer') {
 									this.setState({confirmButton: 'Next'})
 								} else {
@@ -225,6 +254,7 @@ export default class NewJob extends React.Component {
 						<Text style={styles(this.state).headers}>Job Address *</Text>
 						<TextInput
 				        style={styles(this.state).address_input}
+				        defaultValue={this.state.job_address}
 				        onChangeText={(e) => this.setState({ job_address: e})}
 				      	/>
 				      	<Text style={styles(this.state).headers}>Estimated time</Text>
@@ -258,11 +288,8 @@ export default class NewJob extends React.Component {
 					</View>
 				</View>
 			)			
- 
   	}
 }
-
-
 
 const styles = (state) => StyleSheet.create({
 	time: {
@@ -348,8 +375,7 @@ const styles = (state) => StyleSheet.create({
 	buttonConfirmContainer: {
 		flexDirection: 'row',
 		padding: 20 * rem,
-    	justifyContent: "center",
-    	paddingTop: 100 * rem
+    	justifyContent: "center"
 	},
 	buttonConfirm: {
 		backgroundColor: 'lightblue',
@@ -359,10 +385,10 @@ const styles = (state) => StyleSheet.create({
 		flexDirection: 'row',
     	justifyContent: "center",
 		borderWidth: 1 * rem
-  },
-  confirmButtonText: {
-	fontSize: 20 * rem
-}
+  	},
+  	confirmButtonText: {
+		fontSize: 20 * rem
+	}
 	
 });
 

@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert } from 'react-native';
 import axios from 'axios';
-import { isAlphaNumeric, isNumeric, convertTime, isMoney, getWindowValues } from '../numeric.js';
+import { isAlphaNumeric, isNumeric, convertTime, isMoney, getWindowValues, setDay } from '../numeric.js';
 import SelectDropdown from 'react-native-select-dropdown'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import DropDownPicker from 'react-native-dropdown-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 
 
@@ -15,6 +16,7 @@ export default class EditData extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
+			show: false, mode: 'date', date: null, display_date: null,
 			employees: this.props.route.params.employees,
 			empOpen: false, empValue: [], empItems: [], emp_ids: [], empData: this.props.route.params.emp_data,
 			id: this.props.route.params.items.id,
@@ -64,7 +66,7 @@ export default class EditData extends React.Component {
 			let payload = { email: this.state.email, pass: this.state.pass, job_desc: this.state.job_desc, full_name: this.state.full_name,
 												job_address: this.state.job_address, ph_num: this.state.ph_num,
 												est_time: est_time, quote: this.state.quote, status: this.state.status, 
-												comments: this.state.comments, id: this.state.id, empData: this.state.emp_ids }
+												comments: this.state.comments, id: this.state.id, empData: this.state.emp_ids, date: this.state.date }
 			try {
 				var response = await axios.post(this.state.ip + "EditJob", payload)
 				if (response.data == 'Done') {
@@ -136,6 +138,8 @@ export default class EditData extends React.Component {
 				this.setState({employees: result, empValue: result, emp_ids: populate_emp_id})
 			}
 		}
+		let date_info = setDay(new Date(this.props.route.params.date))
+		this.setState({date: date_info.today, display_date: date_info.date})
 
 	}
 	
@@ -150,7 +154,18 @@ export default class EditData extends React.Component {
       		empItems: callback(state.empItems)
     	}));
   	}
-	
+
+	showDatepicker = () => {
+	    this.setState({show: true, mode: 'date'});
+  	};
+  	
+	onChange = (event, selectedDate) => {
+		this.setState({show: false})
+		this.dateInput.blur()
+	    const currentDate = selectedDate || this.state.date;
+		let date_info = setDay(currentDate)
+		this.setState({date: date_info.today, display_date: date_info.date})
+  	};
 
   	render() {
         	return (
@@ -164,8 +179,28 @@ export default class EditData extends React.Component {
 			      	</TouchableOpacity>}
 			      	</View>
 					<View style={styles(this.state).innerView}>
-		      		  	{this.state.editable && <Text style={styles(this.state).headers}>Employees</Text> &&
-					    <DropDownPicker
+		      		  	{this.state.editable && <Text style={styles(this.state).headers}>Date</Text>}
+				 		{this.state.editable && <TextInput 
+				 			editable={!this.state.show}
+				 			ref={input => { this.dateInput = input }}
+				 			defaultValue={this.state.display_date}
+					 		onFocus={this.showDatepicker}
+					 		onBlur={() => {
+								this.setState({show: false})
+							}}
+					        style={styles(this.state).job_input}
+				      	/>}
+					    {this.state.editable && this.state.show && (
+				        	<DateTimePicker
+					          testID="dateTimePicker"
+					          value={this.state.date}
+					          mode={this.state.mode}
+					          display="default"
+					          onChange={this.onChange}
+				        	/>
+				      	)}
+		      		  	{this.state.editable && <Text style={styles(this.state).headers}>Employees</Text>}
+					    {this.state.editable && <DropDownPicker
 					        multiple={true}
 					    	zIndex={3000}
     						zIndexInverse={1000}
@@ -278,11 +313,6 @@ export default class EditData extends React.Component {
 				        defaultValue={this.props.route.params.items.comments}
 				        onChangeText={(e) => this.setState({ comments: e})}
 				      	/>
-						<View style={styles(this.state).cust}>
-					      	<Text style={styles(this.state).headers}>Customer: {this.state.full_name}</Text>
-		
-					      	<Text style={styles(this.state).headers}>Phone: {this.state.ph_num}</Text>
-					    </View>
 				        
 						<View style={styles(this.state).buttonConfirmContainer}>
 							<TouchableOpacity 

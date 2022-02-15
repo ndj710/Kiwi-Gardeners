@@ -6,6 +6,16 @@ export function getWindowValues() {
 	return {width, height, rem}
 }
 
+export function setDay(today=null) {
+		let days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		if (today == null) {
+			var today = new Date()
+		}
+		let date = days[today.getDay()] + ', ' + today.getDate() + '-' + (today.getMonth()+1) + '-' + today.getFullYear()
+		return {today: today, date: date}
+	}
+
+
 export function isValidEmail(str, empty=null) {
 	var code, i, len;
 	if (str.length == 0 && empty != null){

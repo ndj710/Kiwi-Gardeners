@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
-import { getWindowValues } from '../numeric.js';
+import { getWindowValues, setDay } from '../numeric.js';
 import { useNavigation } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 
@@ -25,6 +25,7 @@ export const CurrentJobs = (props) => {
 
 
 const renderJob = ({ item }) => {
+	let date_info = setDay(new Date(item.date))
 	let employees = []
 	on_job.forEach(element => {
 		if (element.job_id == item.id) {
@@ -41,7 +42,7 @@ const renderJob = ({ item }) => {
         	touchSoundDisabled={true}
         	style={styles.jobItem}
    			onPress={ 
-			() => navigation.navigate('Edit job', { employees: employees, emp_data: emp_data, account: account, server: ip, items: item, email: email, password: pass })}>
+			() => navigation.navigate('Edit job', { date: date_info.today.toString(), employees: employees, emp_data: emp_data, account: account, server: ip, items: item, email: email, password: pass })}>
          		<View style={{ flexDirection: "row"}}>
             	    <Text style={styles.job_header_desc}>{item.job_desc}</Text>
             	    <Text style={styles.job_header_status}>{item.job_status}</Text>
@@ -68,7 +69,8 @@ const renderJob = ({ item }) => {
             	    	<Text style={styles.comments}>{item.comments}</Text>
 					</View>
                 </View>
-                {employees.length != 0 && <Text>Employees: {employees}</Text>}
+                <Text style={styles.emp}>{date_info.date}</Text>
+                {employees.length != 0 && <Text style={styles.emp}>Employees: {employees}</Text>}
         </TouchableOpacity>
 )
 }
@@ -148,6 +150,10 @@ const styles = StyleSheet.create({
 		paddingLeft: 3 * rem,
         fontSize: 18 * rem,
     },
+    emp: {
+		paddingLeft: 3 * rem,
+        fontSize: 18 * rem,
+	}
    
 	
 	
