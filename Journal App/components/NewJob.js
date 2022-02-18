@@ -142,23 +142,18 @@ export default class NewJob extends React.Component {
         	return (
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).innerContainer}>
-		      		  	<Text style={styles(this.state).headers}>Date</Text>
-				 		<TextInput 
-				 			editable={!this.state.show}
+		      		  	{<Text style={styles(this.state).headers}>Date</Text>}
+				 		{<Text 
 				 			ref={input => { this.dateInput = input }}
-				 			defaultValue={this.state.display_date}
-					 		onFocus={this.showDatepicker}
-					 		onBlur={() => {
-								this.setState({show: false})
-							}}
-					        style={styles(this.state).job_input}
-				      	/>
+					 		onPress={this.showDatepicker}
+					        style={styles(this.state).date_input}
+				      	>{this.state.display_date}</Text>}
 					    {this.state.show && (
 				        	<DateTimePicker
 					          testID="dateTimePicker"
 					          value={this.state.date}
-					          mode={this.state.mode}
-					          display="default"
+					          mode="date"
+					          display="calendar"
 					          onChange={this.onChange}
 				        	/>
 				      	)}
@@ -324,6 +319,16 @@ const styles = (state) => StyleSheet.create({
 
 	confirm: {
 		paddingTop: 50 * rem
+	},
+	date_input: {
+		backgroundColor: 'white',
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 2 * rem,
+	    borderColor: 'black',
+	    paddingLeft: 10 * rem,		
+		fontSize: 20 * rem,
+		paddingTop: 5 * rem
 	},
 	job_input: {
 		backgroundColor: 'white',

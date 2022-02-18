@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, TextInput, Alert, Platform } from 'react-native';
 import axios from 'axios';
 import { isAlphaNumeric, isNumeric, convertTime, isMoney, getWindowValues, setDay } from '../numeric.js';
 import SelectDropdown from 'react-native-select-dropdown'
@@ -16,7 +16,7 @@ export default class EditData extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			show: false, mode: 'date', date: null, display_date: null,
+			show: false, date: null, display_date: null,
 			employees: this.props.route.params.employees,
 			empOpen: false, empValue: [], empItems: [], emp_ids: [], empData: this.props.route.params.emp_data,
 			id: this.props.route.params.items.id,
@@ -156,12 +156,11 @@ export default class EditData extends React.Component {
   	}
 
 	showDatepicker = () => {
-	    this.setState({show: true, mode: 'date'});
+	    this.setState({show: true});
   	};
   	
 	onChange = (event, selectedDate) => {
 		this.setState({show: false})
-		this.dateInput.blur()
 	    const currentDate = selectedDate || this.state.date;
 		let date_info = setDay(currentDate)
 		this.setState({date: date_info.today, display_date: date_info.date})
@@ -180,22 +179,17 @@ export default class EditData extends React.Component {
 			      	</View>
 					<View style={styles(this.state).innerView}>
 		      		  	{this.state.editable && <Text style={styles(this.state).headers}>Date</Text>}
-				 		{this.state.editable && <TextInput 
-				 			editable={!this.state.show}
+				 		{this.state.editable && <Text 
 				 			ref={input => { this.dateInput = input }}
-				 			defaultValue={this.state.display_date}
-					 		onFocus={this.showDatepicker}
-					 		onBlur={() => {
-								this.setState({show: false})
-							}}
-					        style={styles(this.state).job_input}
-				      	/>}
+					 		onPress={this.showDatepicker}
+					        style={styles(this.state).date_input}
+				      	>{this.state.display_date}</Text>}
 					    {this.state.editable && this.state.show && (
 				        	<DateTimePicker
 					          testID="dateTimePicker"
 					          value={this.state.date}
-					          mode={this.state.mode}
-					          display="default"
+					          mode="date"
+					          display="calendar"
 					          onChange={this.onChange}
 				        	/>
 				      	)}
@@ -373,6 +367,16 @@ const styles = (state) => StyleSheet.create({
 	},
 	confirm: {
 		paddingTop: 50 * rem
+	},
+	date_input: {
+		backgroundColor: 'white',
+	    height: 40 * rem,
+	    margin: 12 * rem,
+	    borderWidth: 2 * rem,
+	    borderColor: 'black',
+	    paddingLeft: 10 * rem,		
+		fontSize: 20 * rem,
+		paddingTop: 5 * rem
 	},
 	job_input: {
 		backgroundColor: 'white',
