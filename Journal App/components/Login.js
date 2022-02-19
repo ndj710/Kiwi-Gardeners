@@ -116,7 +116,7 @@ export default class Login extends React.Component {
 
 			}}>
 			Forgot password?</Text>
-    	<View style={{flexDirection: 'row', flex: 0.1, marginTop: 80 * rem}}>
+    	<View style={{flexDirection: 'row', flex: 0.1, marginTop: 40 * rem}}>
 		   	<TextInput
 	        	placeholder="Email"
 	       		style={styles.input}
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   button: {
 	backgroundColor: '#43913f',
 	marginLeft: 75 * rem,
-	marginTop: 40 * rem,
+	marginTop: 20 * rem,
 
 	width: width * 0.7,
 	flex: 0.1,
