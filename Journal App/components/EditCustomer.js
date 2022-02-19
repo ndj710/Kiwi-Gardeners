@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
-import { isAlphaNumeric, isNumeric, convertTime, getWindowValues } from '../numeric.js';
+import { isAlphaNumeric, isPhone, convertTime, getWindowValues } from '../numeric.js';
 
 
 export default class EditCustomer extends React.Component {
@@ -25,7 +25,7 @@ export default class EditCustomer extends React.Component {
 
 
 	callBackend = async () => {
-		let checkform = [!isAlphaNumeric(this.state.full_name, false), !isAlphaNumeric(this.state.address, false), !isNumeric(this.state.ph_num)]
+		let checkform = [!isAlphaNumeric(this.state.full_name, false), !isAlphaNumeric(this.state.address, false), !isPhone(this.state.ph_num)]
 		let newColours = []
 		checkform.forEach(async (element) => {
 			if (element == false) {
@@ -39,7 +39,7 @@ export default class EditCustomer extends React.Component {
 		if (this.state.bcolours.every((element) => {return(element == 'black')})) {
 			this.setState({button:true})
 			let payload = { email: this.state.email, pass: this.state.pass, full_name: this.state.full_name,
-												address: this.state.address, ph_num: this.state.ph_num, id: this.state.id}
+												address: this.state.address, ph_num: this.state.ph_num.replace(/ /g, ''), id: this.state.id}
 
 			try {
 

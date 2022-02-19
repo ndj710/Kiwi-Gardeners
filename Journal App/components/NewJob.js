@@ -11,7 +11,7 @@ export default class NewJob extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			show: false, mode: 'date', date: null, display_date: null,
+			show: false, date: null, display_date: null,
 			custOpen: false, empOpen: false,
 			custValue: null, empValue: [],
 			custItems: [{customer_id: 0, label: 'New Customer', value: 'NewCustomer'}], empItems : [],
@@ -127,7 +127,7 @@ export default class NewJob extends React.Component {
   	}
   	
 	showDatepicker = () => {
-	    this.setState({show: true, mode: 'date'});
+	    this.setState({show: true});
   	}; 
   	
 	onChange = (event, selectedDate) => {
