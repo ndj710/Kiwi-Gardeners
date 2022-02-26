@@ -349,7 +349,7 @@ app.post("/SearchCompleteJobs", async (req, res) => {
 		let check = await checkpw(req.body.email, req.body.pass);
 		if (check.pass == 'correct' && check.account == 'ADMIN') {
 			let q = 'SELECT jobs.id AS id, full_name, ph_num, address AS cust_address, job_desc, job_address, comments, date_job AS date, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs LEFT JOIN customers ON customers.id = jobs.cust_id WHERE job_status = "Complete"'
-			+ ' ORDER BY date_job';
+			+ ' ORDER BY date_job DESC';
 			const query = util.promisify(connection.query).bind(connection);
 			let result = await query(q);
 			res.send(result);
@@ -358,7 +358,7 @@ app.post("/SearchCompleteJobs", async (req, res) => {
 			'comments, IFNULL(est_time, "NA") AS est_time, IFNULL(quote, "NA") as quote, job_status FROM jobs ' +
 			'LEFT JOIN customers ON jobs.cust_id = customers.id JOIN on_job ON on_job.job_id = jobs.id' +
 			' WHERE on_job.user_id = ' + req.body.id + ' AND job_status = "Complete"'
-			+ ' ORDER BY date_job';
+			+ ' ORDER BY date_job DESC';
 			const query = util.promisify(connection.query).bind(connection);
 			let result = await query(q);
 			res.send(result);
