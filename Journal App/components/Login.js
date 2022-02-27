@@ -33,6 +33,7 @@ export default class Login extends React.Component {
   	callBackend = async () => {
 		this.setState({signin: true, signinbutton: <ActivityIndicator color="black" size="small"  />})
   		await SecureStore.setItemAsync('email', this.state.email);
+   		await SecureStore.setItemAsync('password', this.state.password);
 		if (isAlphaNumeric(this.state.password)) {
 			const hashed_pw = await Crypto.digestStringAsync(
 				Crypto.CryptoDigestAlgorithm.SHA256,
@@ -73,7 +74,7 @@ export default class Login extends React.Component {
 	
 	
 	async componentDidMount() {
-		this.setState({email: await SecureStore.getItemAsync('email')})
+		this.setState({email: await SecureStore.getItemAsync('email'), password: await SecureStore.getItemAsync('password')})
 	}
 	
 	
