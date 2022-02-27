@@ -132,6 +132,7 @@ export default class Login extends React.Component {
 		        style={styles.input}
 		        placeholder="Password"
 		        onChangeText={this.handlePassChange}
+		        defaultValue={this.state.password}
 	      	/>
       	</View>
   		<View style={{borderColor: 'grey', borderWidth: 1 * rem, width: width * 0.7, marginLeft: 75 * rem}}></View>
