@@ -191,6 +191,7 @@ export default class EditData extends React.Component {
 				            }}
 							dropdownIconPosition={'right'}
 							buttonStyle={styles(this.state).status}
+							buttonTextStyle={styles(this.state).status}
 							data={this.state.items}
 							defaultButtonText={this.state.status}
 							onSelect={(selectedItem, index) => {
