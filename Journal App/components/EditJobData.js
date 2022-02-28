@@ -191,7 +191,7 @@ export default class EditData extends React.Component {
 				            }}
 							dropdownIconPosition={'right'}
 							buttonStyle={styles(this.state).status}
-							buttonTextStyle={styles(this.state).status}
+							buttonTextStyle={styles(this.state).statusText}
 							data={this.state.items}
 							defaultButtonText={this.state.status}
 							onSelect={(selectedItem, index) => {
@@ -446,8 +446,10 @@ const styles = (state) => StyleSheet.create({
 	    margin: 12 * rem,
 	    borderWidth: 2 * rem,
 	    borderColor: 'black',
-	    paddingLeft: 10 * rem,	
-	    fontSize: 15 * rem	
+	    paddingLeft: 10 * rem
+	},
+	statusText: {
+		fontSize: 20 * rem	
 	},
 	comments_input: {
 		backgroundColor: 'white',
