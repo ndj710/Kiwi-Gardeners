@@ -54,8 +54,7 @@ export default class Login extends React.Component {
 					if (val.account == 'EMP') {
 						this.props.navigation.navigate('Emp Data', variables)
 					}
-					this.passInput.clear()
-					this.setState({ password: '', signin: false, signinbutton: 'SIGN IN'})
+					this.setState({signin: false, signinbutton: 'SIGN IN'})
 				} else {
 					alert('Incorrect email or password');
 					this.setState({signin: false, signinbutton: 'SIGN IN'})
@@ -123,6 +122,8 @@ export default class Login extends React.Component {
 	       		style={styles.input}
 	       		onChangeText={this.handleEmailChange}
 	       		defaultValue={this.state.email}
+				onSubmitEditing={() => { this.passInput.focus(); }}
+				blurOnSubmit={false}
   			/>
       	</View>
   		<View style={{borderColor: 'grey', borderWidth: 1 * rem, width: width * 0.7, marginLeft: 75 * rem, marginBottom: 20}}></View>
@@ -133,6 +134,7 @@ export default class Login extends React.Component {
 		        placeholder="Password"
 		        onChangeText={this.handlePassChange}
 		        defaultValue={this.state.password}
+				onSubmitEditing={this.callBackend}
 	      	/>
       	</View>
   		<View style={{borderColor: 'grey', borderWidth: 1 * rem, width: width * 0.7, marginLeft: 75 * rem}}></View>

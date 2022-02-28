@@ -178,6 +178,33 @@ export default class EditData extends React.Component {
 			      	</TouchableOpacity>}
 			      	</View>
 					<View style={styles(this.state).innerView}>
+				      	{this.state.editable && <Text style={styles(this.state).headers}>Status</Text>}
+						{this.state.editable && <SelectDropdown
+							renderDropdownIcon={(isOpened) => {
+				              return (
+				                <FontAwesome
+				                  name={isOpened ? "chevron-up" : "chevron-down"}
+				                  color={"#444"}
+				                  size={18}
+				                />
+				              );
+				            }}
+							dropdownIconPosition={'right'}
+							buttonStyle={styles(this.state).status}
+							data={this.state.items}
+							defaultButtonText={this.state.status}
+							onSelect={(selectedItem, index) => {
+								this.setState({status: selectedItem})
+							}}
+							buttonTextAfterSelection={(selectedItem, index) => {
+
+								return selectedItem
+							}}
+							rowTextForSelection={(item, index) => {
+
+								return item
+							}}
+						/>}
 		      		  	{this.state.editable && <Text style={styles(this.state).headers}>Date</Text>}
 				 		{this.state.editable && <Text 
 				 			ref={input => { this.dateInput = input }}
@@ -234,78 +261,63 @@ export default class EditData extends React.Component {
 					        setItems={this.setItems}
 					      />}
 						<Text style={styles(this.state).headers}>Job description *</Text>
-				 		<TextInput
+				 		<TextInput ref={input => { this.descInput = input }}
 				 		editable={this.state.editable}
 				        style={styles(this.state).job_input}
 				        defaultValue={this.props.route.params.items.job_desc}
 				        onChangeText={(e) => this.setState({ job_desc: e})}
+				        onSubmitEditing={() => { this.addressInput.focus(); }}
+						blurOnSubmit={false}
 				      	/>
 						<Text style={styles(this.state).headers}>Job Address *</Text>
-						<TextInput
+						<TextInput ref={input => { this.addressInput = input }}
 						editable={this.state.editable}
 				        style={styles(this.state).address_input}
 				        defaultValue={this.props.route.params.items.job_address}
 				        onChangeText={(e) => this.setState({ job_address: e})}
+				        onSubmitEditing={() => { this.hourInput.focus(); }}
+						blurOnSubmit={false}
 				      	/>
 				      	<Text style={styles(this.state).headers}>Estimated time</Text>
 				      	<View style={{ flexDirection: 'row'}}>
-							<TextInput
+							<TextInput ref={input => { this.hourInput = input }}
 							editable={this.state.editable}
 							placeholder='NA'
 					        style={styles(this.state).hour_input}
 					        defaultValue={this.state.hours.toString()}
 					        onChangeText={(e) => this.setState({ hours: e})}
+					        onSubmitEditing={() => { this.minuteInput.focus(); }}
+							blurOnSubmit={false}
 					      	/>
 					      	<Text style={styles(this.state).time}>hour(s)</Text>
-							<TextInput
+							<TextInput ref={input => { this.minuteInput = input }}
 							editable={this.state.editable}
 							placeholder='NA'
 					        style={styles(this.state).minute_input}
 					        defaultValue={this.state.minutes.toString()}
 					        onChangeText={(e) => this.setState({ minutes: e})}
+					        onSubmitEditing={() => { this.quoteInput.focus(); }}
+							blurOnSubmit={false}
 					      	/>
 					      	<Text style={styles(this.state).time}>minutes</Text>
 				      	</View>
 				      	<Text style={styles(this.state).headers}>Quote (dollars)</Text>
-						<TextInput
+						<TextInput ref={input => { this.quoteInput = input }}
 						editable={this.state.editable}
 						placeholder='NA'
 				        style={styles(this.state).quote_input}
 				        defaultValue={this.state.quote}
 				        onChangeText={(e) => this.setState({ quote: e})}
+				        onSubmitEditing={() => { this.commentsInput.focus(); }}
+						blurOnSubmit={false}
 				      	/>
-				      	{this.state.editable && <Text style={styles(this.state).headers}>Status</Text>}
-						{this.state.editable && <SelectDropdown
-							renderDropdownIcon={(isOpened) => {
-				              return (
-				                <FontAwesome
-				                  name={isOpened ? "chevron-up" : "chevron-down"}
-				                  color={"#444"}
-				                  size={18}
-				                />
-				              );
-				            }}
-							dropdownIconPosition={'right'}
-							buttonStyle={styles(this.state).status}
-							data={this.state.items}
-							defaultButtonText={this.state.status}
-							onSelect={(selectedItem, index) => {
-								this.setState({status: selectedItem})
-							}}
-							buttonTextAfterSelection={(selectedItem, index) => {
-
-								return selectedItem
-							}}
-							rowTextForSelection={(item, index) => {
-
-								return item
-							}}
-						/>}
 				       	<Text style={styles(this.state).headers}>Comments</Text>
-						<TextInput
+						<TextInput ref={input => { this.commentsInput = input }}
 				        style={styles(this.state).comments_input}
 				        defaultValue={this.props.route.params.items.comments}
 				        onChangeText={(e) => this.setState({ comments: e})}
+				        onSubmitEditing={this.callBackend}
+						blurOnSubmit={false}
 				      	/>
 				        
 						<View style={styles(this.state).buttonConfirmContainer}>
@@ -434,7 +446,7 @@ const styles = (state) => StyleSheet.create({
 	    borderWidth: 2 * rem,
 	    borderColor: 'black',
 	    paddingLeft: 10 * rem,	
-	    fontSize: 20 * rem	
+	    fontSize: 15 * rem	
 	},
 	comments_input: {
 		backgroundColor: 'white',

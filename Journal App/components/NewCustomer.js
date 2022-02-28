@@ -72,19 +72,25 @@ export default class NewCustomer extends React.Component {
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).innerView}>
 						<Text style={styles(this.state).headers}>Name *</Text>
-				 		<TextInput
+	 					<TextInput ref={input => { this.nameInput = input }}
 				        style={styles(this.state).nameInput}
 				        onChangeText={(e) => this.setState({ full_name: e})}
+				        onSubmitEditing={() => { this.addressInput.focus(); }}
+						blurOnSubmit={false}
 				      	/>
 						<Text style={styles(this.state).headers}>Address *</Text>
-						<TextInput
+	 					<TextInput ref={input => { this.addressInput = input }}
 				        style={styles(this.state).addressInput}
 				        onChangeText={(e) => this.setState({ address: e})}
+				        onSubmitEditing={() => { this.phoneInput.focus(); }}
+						blurOnSubmit={false}
 				      	/>
 						<Text style={styles(this.state).headers}>Phone</Text>
-						<TextInput
+	 					<TextInput ref={input => { this.phoneInput = input }}
 				        style={styles(this.state).phoneInput}
 				        onChangeText={(e) => this.setState({ ph_num: e})}
+				        onSubmitEditing={this.callBackend}
+						blurOnSubmit={false}
 				      	/>
 	
 						<View style={styles(this.state).buttonConfirmContainer}>

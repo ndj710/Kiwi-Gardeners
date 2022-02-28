@@ -50,14 +50,18 @@ export default class NewEmp extends React.Component {
 				<View style={styles(this.state).container}>
 					<View style={styles(this.state).innerView}>
 						<Text style={styles(this.state).headers}>Name *</Text>
-				 		<TextInput
+				 		<TextInput ref={input => { this.nameInput = input }}
 				        style={styles(this.state).nameInput}
 				        onChangeText={(e) => this.setState({ full_name: e})}
+				        onSubmitEditing={() => { this.emailInput.focus(); }}
+						blurOnSubmit={false}
 				      	/>
 						<Text style={styles(this.state).headers}>Email *</Text>
-						<TextInput
+						<TextInput ref={input => { this.emailInput = input }}
 				        style={styles(this.state).addressInput}
 				        onChangeText={(e) => this.setState({ empEmail: e})}
+				        onSubmitEditing={this.callBackend}
+						blurOnSubmit={false}
 				      	/>
 						<View style={styles(this.state).buttonConfirmContainer}>
 							<TouchableOpacity 

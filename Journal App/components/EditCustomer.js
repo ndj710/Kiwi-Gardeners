@@ -103,22 +103,28 @@ export default class EditCustomer extends React.Component {
 			      	</View>
 					<View style={styles(this.state).innerView}>
 				      	<Text style={styles(this.state).headers}>Name *</Text>
-						<TextInput
+	 					<TextInput ref={input => { this.nameInput = input }}
 				        style={styles(this.state).nameInput}
 				        defaultValue={this.state.full_name}
 				        onChangeText={(e) => this.setState({ full_name: e})}
+				       	onSubmitEditing={() => { this.addressInput.focus(); }}
+						blurOnSubmit={false}
 				      	/>
 						<Text style={styles(this.state).headers}>Address *</Text>
-						<TextInput
+						<TextInput ref={input => { this.addressInput = input }}
 				        style={styles(this.state).addressInput}
 				        defaultValue={this.state.address}
 				        onChangeText={(e) => this.setState({ address: e})}
+				        onSubmitEditing={() => { this.phoneInput.focus(); }}
+						blurOnSubmit={false}
 				      	/>
 				      	<Text style={styles(this.state).headers}>Phone</Text>
-						<TextInput
+					 	<TextInput ref={input => { this.phoneInput = input }}
 				        style={styles(this.state).phoneInput}
 				        defaultValue={this.state.ph_num}
 				        onChangeText={(e) => this.setState({ ph_num: e})}
+				        onSubmitEditing={this.callBackend}
+						blurOnSubmit={false}
 				      	/>  	
 				      	
 						<View style={styles(this.state).buttonConfirmContainer}>

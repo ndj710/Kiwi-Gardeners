@@ -242,40 +242,50 @@ export default class NewJob extends React.Component {
 							}}
 					      />
 						<Text style={styles(this.state).headers}>Job description *</Text>
-				 		<TextInput
+				 		<TextInput ref={input => { this.descInput = input }}
 				        style={styles(this.state).job_input}
 				        onChangeText={(e) => this.setState({ job_desc: e})}
+				        onSubmitEditing={() => { this.addressInput.focus(); }}
+						blurOnSubmit={false}
 				      	/>
 						<Text style={styles(this.state).headers}>Job Address *</Text>
-						<TextInput
+						<TextInput ref={input => { this.addressInput = input }}
 				        style={styles(this.state).address_input}
 				        defaultValue={this.state.job_address}
 				        onChangeText={(e) => this.setState({ job_address: e})}
+				        onSubmitEditing={() => { this.hourInput.focus(); }}
+						blurOnSubmit={false}
 				      	/>
 				      	<Text style={styles(this.state).headers}>Estimated time</Text>
 				      	<View style={{ flexDirection: 'row'}}>
-							<TextInput
+							<TextInput ref={input => { this.hourInput = input }}
 					        style={styles(this.state).hour_input}
 					        onChangeText={(e) => this.setState({ hours: e})}
+					        onSubmitEditing={() => { this.minuteInput.focus(); }}
+							blurOnSubmit={false}
 					      	/>
 					      	<Text style={styles(this.state).time}>hour(s)</Text>
-							<TextInput
+							<TextInput ref={input => { this.minuteInput = input }}
 					        style={styles(this.state).minute_input}
 					        onChangeText={(e) => this.setState({ minutes: e})}
+					        onSubmitEditing={() => { this.quoteInput.focus(); }}
+							blurOnSubmit={false}
 					      	/>
 					      	<Text style={styles(this.state).time}>minutes</Text>
 				      	</View>
 				      	<Text style={styles(this.state).headers}>Quote (dollars)</Text>
-						<TextInput
+						<TextInput ref={input => { this.quoteInput = input }}
 				        style={styles(this.state).quote_input}
 				        onChangeText={(e) => this.setState({ quote: e})}
+				        onSubmitEditing={this.callBackend}
+						blurOnSubmit={false}
 				      	/>
 		      	
 						<View style={styles(this.state).buttonConfirmContainer}>
 							<TouchableOpacity 
 								disabled={this.state.button}
 								style={styles(this.state).buttonConfirm}
-					        	onPress={() => {this.callBackend()}}
+					        	onPress={this.callBackend}
 					        	activeOpacity={0.4}>
 					        	<Text style={styles(this.state).confirmButtonText}>{this.state.confirmButton}</Text>
 					      	</TouchableOpacity>
