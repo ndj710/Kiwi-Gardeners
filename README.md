@@ -5,6 +5,17 @@ Kiwi Gardeners is a landscaping business who had issues with tracking job inform
 
 ## Screenshots
 
+<div>
+  <h5>Loading/Login</h5>
+  <img src="/screenshots/loadinglogo.jpg?raw=true" width="200" height="400"/>
+  <img src="/screenshots/loginscreenblank.jpg?raw=true" width="200" height="400"/>
+  <h5>Current/Complete jobs</h5>
+  <img src="/screenshots/currentjobsblank.jpg?raw=true" width="200" height="400"/>
+  <img src="/screenshots/currentjobs.jpg?raw=true" width="200" height="400"/>
+  <img src="/screenshots/completejobsblank.jpg?raw=true" width="200" height="400"/>
+  <img src="/screenshots/completejobs.jpg?raw=true" width="200" height="400"/>
+</div>
+
 
 ### Changes to implement:
 
